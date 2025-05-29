@@ -1,0 +1,81 @@
+{% extends "base.html"%}
+{% load static %}
+
+
+
+{% block page_title %} Campaign Record Call Flow {% endblock page_title %}
+
+    
+
+{% block content %}
+    <div class="row d-flex mb-3">
+        <div class="col d-flex justify-content-end">
+            <a href="{% url 'dialer-reports-campaign-details' record_id %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle-fill"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Campaign Record CDRS</h3>
+            </div>
+            <div class="card-body">
+                <table id="example1" class="table table-sm table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Ring Duration</th>
+                        <th>Talk Durtaion</th>
+                        <th>Call Duration</th>
+                        <th>Status</th>
+                        <th>Reason</th>
+                        <th>Outbound Caller Id</th>
+                        <th>Campaign Name</th>
+                        <th>Organization</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for call in cdrs %}  
+                    <tr>
+                        <td>{{call.time|date:"d/m/Y H:m:s"}}</td>
+                        <td>{{call.ring_duration}}</td>
+                        <td>{{call.talk_duration}}</td>
+                        <td>{{call.call_duration}}</td>
+                        <td>{{call.status}}</td>
+                        <td>{{call.reason}}</td>
+                        <td>{{call.outbound_caller_id}}</td>
+                        <td>{{call.campaign_name}}</td>
+                        <td>{{call.organization}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+
+{% block js %}
+<!--Data Tables-->
+<script>
+  $(function () {
+    $("#example1").DataTable({
+      "responsive": true, "lengthChange": false, "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    $('#example2').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+    });
+  });
+</script>
+{% endblock js %}

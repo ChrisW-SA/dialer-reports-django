@@ -1,0 +1,94 @@
+{% extends "base.html"%}
+{% load static %}
+
+
+
+{% block page_title %} Campaigns {% endblock page_title %}
+
+
+
+{% block content %}
+
+<div class="row">
+  <div class="col-6 mx-auto">
+    <div class="card">
+            <div class="card-header">
+              <div class="row align-items-center">
+                <!-- Filter form on the left -->
+                <div class="col-md-8">
+                  <form method="get" class="row g-2">
+                    {% for field in filter.form %}
+                      <div class="col-auto">
+                        {{ field }}
+                      </div>
+                    {% endfor %}
+                    <div class="col-auto">
+                      <button type="submit" class="btn btn-primary">Filter</button>
+                    </div>
+                  </form>
+                </div>
+
+                <!-- Button on the right -->
+                <div class="col-md-4 text-end">
+                  <a href="#" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#addCampaignModal">
+                    <i class="bi bi-plus-circle-fill"></i> Campaign
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body" style="max-height: 700px; overflow: auto;">
+                <table id="example1" class="table table-sm table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th class="ps-4">Campaign Name</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for campaign in campaigns %}  
+                    <tr>
+                        <td class="ps-4">
+                            {{campaign.campaign_name}}
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'dialer-reports-campaign-details' campaign.id %}" class="text-dark">
+                                <i class="fa-solid fa-sliders me-3"></i>
+                            </a>
+                            <a href="{% url 'dialer-reports-delete-campaign-confirmation' campaign.id %}" class="text-dark">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+  </div> 
+</div>
+
+
+<!--Add Campaign Modal-->
+
+<div class="modal fade" id="addCampaignModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addCampaignModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addCampaignModalLabel">Upload Campaign Outcomes</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-primary" type="submit">Upload</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock content %}

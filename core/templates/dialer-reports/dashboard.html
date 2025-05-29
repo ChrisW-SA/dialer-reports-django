@@ -1,0 +1,252 @@
+{% extends "base.html"%}
+{% load static %}
+{% load report_tags %}
+
+
+
+{% block page_title %} Dashboard {% endblock page_title %}
+
+
+
+{% block content %}
+
+<div class="row mb-3 pe-5 me-2">
+  <div class="col d-flex justify-content-end">
+    <form method="get" class="d-flex align-items-center">
+      {% for field in filter.form %}
+        <div class="me-3">
+          {{ field.label_tag }}
+          {{ field }}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary mt-4">Filter</button>
+    </form>
+  </div>
+</div>
+
+
+<div class="row mb-4">
+    <div class="col-md-2 col-sm-6 col-12 mx-auto">
+        <div class="info-box text-bg-primary">
+            <span class="info-box-icon"> <i class="fa-solid fa-list-check"></i> </span>
+            <div class="info-box-content">
+            <span class="info-box-text">Total Campaigns</span>
+            <span class="info-box-number">{{aggregates.total_campaigns}}</span>
+            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
+            {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-6 col-12 mx-auto">
+        <div class="info-box text-bg-primary">
+            <span class="info-box-icon"> <i class="fa-solid fa-phone"></i> </span>
+            <div class="info-box-content">
+            <span class="info-box-text">Total Calls</span>
+            <span class="info-box-number">{{aggregates.total_calls}}</span>
+            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
+            {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-6 col-12 mx-auto">
+        <div class="info-box text-bg-primary">
+            <span class="info-box-icon"> <i class="fa-solid fa-phone-volume"></i> </span>
+            <div class="info-box-content">
+            <span class="info-box-text">Total Talk Duration</span>
+            <span class="info-box-number">{{aggregates.total_talk_duration|seconds_to_hms}}</span>
+            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
+            {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+    </div>
+    <div class="col-md-2 col-sm-6 col-12 mx-auto">
+        <div class="info-box text-bg-primary">
+            <span class="info-box-icon"> <i class="fa-solid fa-phone-volume"></i> </span>
+            <div class="info-box-content">
+            <span class="info-box-text">Average Talk Duration</span>
+            <span class="info-box-number">{{avg_talk_duration|seconds_to_hms}}</span>
+            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
+            {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-sm-12 col-md-6">
+        <div id="dialResultDonutChart"></div>
+    </div>
+    <div class="col-sm-12 col-md-6">
+        <div id="dispoChart"></div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-sm-12 col-md-6">
+        <div id="callsPerAgentChart"></div>
+    </div>
+    <div class="col-sm-12 col-md-6">
+        <div id="chart"></div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+
+
+{% block js %}
+<!--Dial Result Chart-->
+<script>
+    var options = {
+        series: {{dial_result_counts}},
+          chart: {
+            height: 400,
+            type: 'donut',
+        },
+        labels: {{dial_result_labels|safe}},
+        title: {
+            text: 'Dial Results',
+        },
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200,
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }]
+    };
+
+    var chart = new ApexCharts(document.querySelector("#dialResultDonutChart"), options);
+    chart.render();
+</script>
+
+<!--Disposition Chart-->
+<script>
+    var options = {
+          series: [{
+          name: 'Dispositions',
+          data: {{dispo_counts}}
+        }],
+          chart: {
+          type: 'bar',
+          height: 350
+        },
+        title: {
+            text: 'Dispositions',
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%',
+            borderRadius: 5,
+            borderRadiusApplication: 'end'
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: {{dispo_labels|safe}},
+        },
+        yaxis: {
+          title: {
+            {% comment %} text: '$ (thousands)' {% endcomment %}
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        tooltip: {
+          y: {
+            {% comment %} formatter: function (val) {
+              return "$ " + val + " thousands"
+            } {% endcomment %}
+          }
+        }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#dispoChart"), options);
+        chart.render();
+</script>
+
+<!--Time series Area Chart-->
+<script>
+  var options = {
+          series: [{
+          name: 'Calls per day',
+          data: {{ calls_per_day|safe }}
+        }],
+          chart: {
+          height: 350,
+          type: 'area'
+        },
+        title: {
+            text: 'Calls Per Hour',
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          curve: 'smooth'
+        },
+        xaxis: {
+          categories: {{ dates|safe }}
+        },
+        tooltip: {
+          x: {
+            format: 'HH:mm'
+          },
+        },
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+</script>
+
+<!--Call per Agent bar Chart-->
+<script>
+  var options = {
+    series: [{
+      name: 'Total Calls',
+      data: {{agent_call_counts}}
+    }],
+    chart: {
+      type: 'bar',
+      height: 350
+    },
+    title: {
+            text: 'Calls Per Agent',
+        },
+    plotOptions: {
+      bar: {
+        borderRadius: 4,
+        borderRadiusApplication: 'end',
+        horizontal: true,
+      }
+    },
+    dataLabels: {
+      enabled: false
+    },
+    xaxis: {
+      categories: {{agent_labels|safe}}
+    }
+  };
+
+  var chart = new ApexCharts(document.querySelector("#callsPerAgentChart"), options);
+  chart.render();
+</script>
+{% endblock js %}

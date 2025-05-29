@@ -29,6 +29,7 @@ def dashboard(request):
         filterset = CampaignRecordFilter(request.GET, queryset=queryset, request=request)
 
     queryset = filterset.qs
+    print(queryset)
 
     # Fallback to current year and month if not provided
     now = datetime.now()
@@ -138,6 +139,7 @@ def dashboard(request):
         'agent_call_counts': agent_call_counts,
 
         'filter': filterset,
+        'queryset': queryset
 
     })
 

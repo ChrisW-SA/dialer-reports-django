@@ -9,20 +9,15 @@
 
 {% block content %}
 
-<section class="content text-center">
-  <div class="error-page">
-    <h2 class="headline text-warning"> 404</h2>
-
-    <div class="error-content">
-      <h3><i class="fas fa-exclamation-triangle text-warning"></i> Oops! Page not found.</h3>
-
-      <p>
-        We could not find the page you were looking for.
-        <a href="{% url 'home-page' %}">Return to home page</a>.
-      </p>
-
+<div class="container text-center py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <h4>We could not find the page you were looking for.</h4>
+      <p>Please contact the administrator.</p>
+      <img src="{% static 'assets/img/PageNotFound-404.png' %}" alt="404 Icon" class="img-fluid" style="max-height: 500px;">
+      <a href="{% url 'home-page' %}" class="btn btn-outline-primary my-3" style="width: 10rem;">Home</a>
     </div>
   </div>
-</section>
+</div>
 
 {% endblock content %}

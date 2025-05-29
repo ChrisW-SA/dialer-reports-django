@@ -10,6 +10,7 @@
 
 {% block content %}
 
+{% if filterset.qs %}
 <div class="row mb-3 pe-5 me-2">
   <div class="col d-flex justify-content-end">
     <form method="get" class="d-flex align-items-center">
@@ -94,6 +95,21 @@
     </div>
 </div>
 
+{% else %}
+
+<div class="container text-center py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <h4>There is no data to display</h4>
+      <p>Please upload campaign data and return to the dashboard.</p>
+      <a href="{% url 'dialer-reports-campaigns' %}" class="btn btn-outline-primary my-3" style="width: 10rem;">Go to Campaigns</a>
+      <img src="/static/assets/img/noData.png" alt="No Data Icon" class="img-fluid" style="max-height: 500px;">
+    </div>
+  </div>
+</div>
+
+
+{% endif %}
 
 {% endblock content %}
 

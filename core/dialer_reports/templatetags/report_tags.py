@@ -5,6 +5,8 @@ register = template.Library()
 
 @register.filter
 def seconds_to_hms(seconds):
+    if not seconds:
+        return 0
     seconds = int(seconds)
     hours = seconds // 3600
     seconds %= 3600

@@ -285,17 +285,6 @@ def campaign_details(request, pk):
     dial_result_counts = [item['count'] for item in dial_result_aggregate]
 
     # ===== Agents Stats ===== #
-
-    # agent_stats = (
-    #     records.filter(dial_result="C-Completed")
-    #            .values('agent_extension')
-    #            .annotate(answered_calls=Count('uid'),
-    #                      dispositions=Count('id', filter= ~Q(call_disposition='')),
-    #                      total_talk_duration=Sum('talk_duration'),
-    #                      avg_talk_duration=Avg('talk_duration'),)
-    #            .order_by('agent_extension')
-    # )
-
     agent_stats = (
         records.filter(dial_result="C-Completed")
             .values('agent_extension')

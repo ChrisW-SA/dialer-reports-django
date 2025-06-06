@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
 from django.db import transaction
 from django.contrib import messages
-from django.db.models import Count, Avg, Sum, Max, Q
+from django.db.models import Count, Avg, Sum, Max, Q, Case, When, IntegerField, Max, ExpressionWrapper, FloatField, F
 from django.contrib.auth.decorators import login_required
-from django.db.models.functions import ExtractYear, ExtractMonth, TruncDate
+from django.db.models.functions import TruncDate
 
 from dialer_reports.models import Campaign, CampaignRecord, Cdr
 from dialer_reports.forms import UploadFileForm, AdminUploadFileForm
@@ -20,32 +20,22 @@ import calendar
 @login_required
 def dashboard(request):
 
-    queryset = CampaignRecord.get_base_queryset(request)
+    # ===== Get base queryset ===== #
+    base_queryset = CampaignRecord.get_base_queryset(request)
 
-    # Apply the filter
-    if request.user.is_superuser:
-        filterset = AdminCampaignRecordFilter(request.GET, queryset=queryset, request=request)
-    else:
-        filterset = CampaignRecordFilter(request.GET, queryset=queryset, request=request)
+    # ===== Get the correct filter based on if the user is a superuser or not ===== #
+    filter_class = AdminCampaignRecordFilter if request.user.is_superuser else CampaignRecordFilter
+   
+    filterset = filter_class(
+        data=request.GET,
+        queryset=base_queryset,
+        request=request
+    )
 
-    queryset = filterset.qs
-    print(queryset)
+    # ===== Get the filtered data ===== #
+    queryset = filterset.qs if filterset.is_valid() else base_queryset.none()
 
-    # Fallback to current year and month if not provided
-    now = datetime.now()
-    year = request.GET.get('year') or now.year
-    month = request.GET.get('month') or now.month
-
-    # If year/month not in GET, manually filter
-    if not request.GET.get('year') or not request.GET.get('month'):
-        filtered_queryset = (
-            queryset
-            .annotate(year=ExtractYear('time'), month=ExtractMonth('time'))
-            .filter(year=year, month=month)
-        )
-    else:
-        filtered_queryset = filterset.qs
-
+    # ===== Calculate aggregates ===== #
     aggregates = queryset.aggregate(
         total_campaigns=Count('campaign_name', distinct=True),
         total_calls=Count('uid'),
@@ -56,103 +46,100 @@ def dashboard(request):
         abandoned_calls=Count('id', filter=Q(dial_result__iexact='R-Abandon')),
         unanswered_calls=Count('id', filter=Q(dial_result__iexact='R-No Answer')),
         complete_calls=Count('id', filter=Q(dial_result__iexact='C-Completed')),
+        connected_calls =Count('id', filter=Q(dial_result__iexact='C-Completed')) + Count('id', filter=Q(dial_result__iexact='R-Abandon')),
+        dropped_calls =Count('id', filter=Q(dial_result__iexact='R-No Answer')) + Count('id', filter=Q(dial_result__iexact='F-Failed')) + Count('id', filter=Q(dial_result__iexact='R-Timeout')),
     )
 
+    # Average for completed calls only
     avg_talk_duration = (
         queryset.filter(dial_result='C-Completed')
-                .aggregate( avg_talk_duration=Avg('talk_duration'))['avg_talk_duration']
+               .aggregate(avg_talk_duration=Avg('talk_duration'))
+               .get('avg_talk_duration')
     )
 
-    # ===== Completed Call Disposition Counts ==== #
-
+    # ===== Completed Call Disposition Counts ===== #
     dispo_aggregate = (
-        queryset.filter(dial_result="C-Completed")
-               .values('call_disposition')
-               .annotate(count=Count('call_disposition'))
-               .order_by('call_disposition')
-    )
-
-    # Prepare lists for ApexCharts
+            queryset.filter(dial_result="C-Completed")
+                .values('call_disposition')
+                .annotate(count=Count('call_disposition'))
+                .order_by('call_disposition')
+        )
+    
     dispo_labels = [item['call_disposition'] for item in dispo_aggregate]
     dispo_counts = [item['count'] for item in dispo_aggregate]
 
-    # ===== Dial Results Counts for Apex charts ==== #
+    # ===== Dial Results Breakdown ===== #
     dial_result_aggregate = (
-        queryset.values('dial_result')
-               .annotate(count=Count('dial_result'))
-               .order_by('dial_result')
-    )
-
+            queryset.values('dial_result')
+                .annotate(count=Count('dial_result'))
+                .order_by('dial_result')
+        )
+    
     dial_result_labels = [item['dial_result'] for item in dial_result_aggregate]
     dial_result_counts = [item['count'] for item in dial_result_aggregate]
 
-    # ==== Total calls per day for Apex Charts ===== #
+    # ===== Daily Calls Data ===== #
     daily_calls = (
-        filtered_queryset
-        .annotate(day=TruncDate('time'))
-        .values('day')
-        .annotate(total_calls=Count('uid'))
-        .order_by('day')
+        queryset.annotate(day=TruncDate('time'))
+               .values('day')
+               .annotate(total_calls=Count('uid'))
+               .order_by('day')
     )
 
-    # Ensure year and month are integers
-    year = int(year)
-    month = int(month)
+    # Prepare complete date range for the month selected in the filter
+    year = int(filterset.data.get('year'))
+    month = int(filterset.data.get('month'))
 
     num_days = calendar.monthrange(year, month)[1]
     all_days = [date(year, month, day) for day in range(1, num_days + 1)]
-
     daily_calls_dict = {entry['day']: entry['total_calls'] for entry in daily_calls}
-
+    
     dates = [d.strftime('%Y-%m-%d') for d in all_days]
     calls_per_day = [daily_calls_dict.get(d, 0) for d in all_days]
 
-
-    # ===== Total Calls per agent ===== #
+    # ===== Agent Performance Metrics ===== #
     calls_by_extension = (
-        queryset.filter(dial_result='C-Completed')
+            queryset.filter(dial_result='C-Completed')
                 .values('agent_extension')
                 .annotate(total_calls=Count('uid'))
                 .order_by('agent_extension')
-    )
-
+        )
+    
     agent_labels = [item['agent_extension'] for item in calls_by_extension]
     agent_call_counts = [item['total_calls'] for item in calls_by_extension]
 
-    return render(request, 'dialer-reports/dashboard.html', context={
+
+    return render(request, 'dialer-reports/dashboard.html', context = {
         'sidebar_menu': 'dialer-reports',
         'sidebar_sub_menu': 'dialer-reports-dashboard',
-
         'aggregates': aggregates,
         'avg_talk_duration': avg_talk_duration,
-
         'dial_result_labels': dial_result_labels,
-        'dial_result_counts':dial_result_counts,
-
+        'dial_result_counts': dial_result_counts,
         'dispo_labels': dispo_labels,
         'dispo_counts': dispo_counts,
-
         'dates': dates,
         'calls_per_day': calls_per_day,
-
         'agent_labels': agent_labels,
         'agent_call_counts': agent_call_counts,
-
         'filter': filterset,
-        'queryset': queryset
-
-    })
+        'base_queryset': base_queryset,
+        'queryset': queryset,
+        }
+    )
 
 
 @login_required
 def campaigns(request):
-    # ===== Get Existing Campaigns from the db ===== #
-    queryset = Campaign.get_base_queryset(request)
 
-    if request.user.is_superuser:
-        campaign_filter = AdminCampaignSearchFilter(request.GET, queryset)
-    else:
-        campaign_filter = CampaignSerachFilter(request.GET, queryset)
+    # ===== Get the correct filter based on if the user is a superuser or not ===== #
+    filter_class = AdminCampaignSearchFilter if request.user.is_superuser else CampaignSerachFilter
+
+
+    # Filter the data based on the filter options in the request object
+    filterset = filter_class(
+        request=request
+    )
 
     # ===== Handle form submission ===== #
     if request.method == "POST":
@@ -245,9 +232,10 @@ def campaigns(request):
         'sidebar_menu': 'dialer-reports',
         'sidebar_sub_menu': 'dialer-reports-campaigns',
 
+        'filter': filterset,
+        'campaigns': filterset.qs,
+
         'form': form,
-        'filter': campaign_filter,
-        'campaigns': campaign_filter.qs,
     })
 
 
@@ -267,6 +255,8 @@ def campaign_details(request, pk):
         total_talk_duration=Sum('talk_duration'),
         avg_ring_duration=Avg('ring_duration'),
         max_ring_duration=Max('ring_duration'),
+        connected_calls =Count('id', filter=Q(dial_result__iexact='C-Completed')) + Count('id', filter=Q(dial_result__iexact='R-Abandon')),
+        dropped_calls =Count('id', filter=Q(dial_result__iexact='R-No Answer')) + Count('id', filter=Q(dial_result__iexact='F-Failed')) + Count('id', filter=Q(dial_result__iexact='R-Timeout')),
 
     )
 
@@ -279,7 +269,7 @@ def campaign_details(request, pk):
                .order_by('call_disposition')
     )
 
-    # Prepare lists for ApexCharts
+    # Prepare lists for Charts
     dispo_labels = [item['call_disposition'] for item in dispo_aggregate]
     dispo_counts = [item['count'] for item in dispo_aggregate]
 
@@ -290,22 +280,84 @@ def campaign_details(request, pk):
                .order_by('dial_result')
     )
 
+    # Prepare lists for Charts
     dial_result_labels = [item['dial_result'] for item in dial_result_aggregate]
     dial_result_counts = [item['count'] for item in dial_result_aggregate]
 
     # ===== Agents Stats ===== #
 
+    # agent_stats = (
+    #     records.filter(dial_result="C-Completed")
+    #            .values('agent_extension')
+    #            .annotate(answered_calls=Count('uid'),
+    #                      dispositions=Count('id', filter= ~Q(call_disposition='')),
+    #                      total_talk_duration=Sum('talk_duration'),
+    #                      avg_talk_duration=Avg('talk_duration'),)
+    #            .order_by('agent_extension')
+    # )
+
     agent_stats = (
         records.filter(dial_result="C-Completed")
-               .values('agent_extension')
-               .annotate(answered_calls=Count('uid'),
-                         total_talk_duration=Sum('talk_duration'),
-                         avg_talk_duration=Avg('talk_duration'),)
-               .order_by('agent_extension')
+            .values('agent_extension')
+            .annotate(
+                answered_calls=Count('uid'),
+                dispositions=Count('id', filter=~Q(call_disposition='')),
+                total_talk_duration=Sum('talk_duration'),
+                avg_talk_duration=Avg('talk_duration'),
+                # Calculate disposition percentage (dispositions / answered_calls * 100)
+                disposition_percentage=ExpressionWrapper(
+                    F('dispositions') * 100.0 / F('answered_calls'),
+                    output_field=FloatField()
+                )
+            )
+            .order_by('agent_extension')
     )
 
+    # Prepare lists for Charts
     agent_answered_labels = [item['agent_extension'] for item in agent_stats]
     agent_answered_counts = [item['answered_calls'] for item in agent_stats]
+
+
+    # ===== Agent Dispositions ===== #
+    DISPOSITION_CHOICES = records.values_list('call_disposition', flat=True).distinct()
+
+    # Build annotations using Case + When
+    annotations = {
+        disposition.replace(" ", "_").lower(): Count(
+            Case(
+                When(call_disposition=disposition, then=1),
+                output_field=IntegerField(),
+            )
+        )
+        for disposition in DISPOSITION_CHOICES
+    }
+
+    agent_dispos = (
+        records.filter(dial_result='C-Completed')
+            .values('agent_extension')
+            .annotate(**annotations)
+            .order_by('agent_extension')
+    )
+
+    headers = ['Agent Extension'] + [
+        'No Dispo' if name == '' else name.replace("_", " ").title()
+        for name in annotations.keys()
+    ],
+
+
+    # ===== Connected vs Dropped Calls Pie chart data ==== #
+    connected_vs_dropped_pie_chart_data = {'series': [aggregates['connected_calls'], aggregates['dropped_calls']],
+                                           'labels': ['Connected Calls', 'Dropped Calls'],
+                                        #    'colors': ['#4CAF50', '#F44336']  # Green for connected, red for dropped
+                                          }
+    
+    # ===== Agent Dispostion % Chart Data ===== #
+
+    disposition_chart_data = {
+        'series': list(agent_stats.values_list('disposition_percentage', flat=True)),
+        'labels': list(agent_stats.values_list('agent_extension', flat=True)),
+        # 'colors': ['#4CAF50', '#2196F3', '#FFC107', '#FF5722', '#9C27B0']  # Custom colors
+    }
 
     return render(request, 'dialer-reports/campaign-details.html', context={
         'sidebar_menu': 'dialer-reports',
@@ -317,6 +369,11 @@ def campaign_details(request, pk):
 
         'campaign_name': Campaign.objects.get(id=pk),
 
+        # Agent Dispositions
+        'agent_dispositions': agent_dispos,
+        'headers': headers[0],
+        'field_names': ['agent_extension'] + list(annotations.keys()),
+
         # Chart Data
         'dispo_labels': dispo_labels,
         'dispo_counts': dispo_counts,
@@ -324,6 +381,8 @@ def campaign_details(request, pk):
         'dial_result_counts': dial_result_counts,
         'agent_answered_labels': agent_answered_labels,
         'agent_answered_counts': agent_answered_counts,
+        'connected_vs_dropped_pie_chart_data': connected_vs_dropped_pie_chart_data,
+        'agent_disposition_percentage_chart_data': disposition_chart_data,
         
     })
 
@@ -365,3 +424,4 @@ def delete_campaign(request, pk):
     messages.success(request, f"Campaign {campaign} has been deleted.")
 
     return redirect("dialer-reports-campaigns")
+

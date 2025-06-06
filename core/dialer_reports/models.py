@@ -12,10 +12,7 @@ class Campaign(models.Model):
 
     @classmethod
     def get_base_queryset(cls, request):
-        if request.user.is_superuser:
-            return cls.objects.all()
-        else:
-            return cls.objects.filter(organization=request.user.organization)
+        return cls.objects.all() if request.user.is_superuser else cls.objects.filter(organization=request.user.organization)
 
 
 class CampaignRecord(models.Model):
@@ -38,11 +35,8 @@ class CampaignRecord(models.Model):
         return f"{self.organization} - {self.campaign_name} : {self.uid}"
     
     @classmethod
-    def get_base_queryset(cls, request):
-        if request.user.is_superuser:
-            return cls.objects.all()
-        else:
-            return cls.objects.filter(organization=request.user.organization)
+    def get_base_queryset(cls, request):        
+        return cls.objects.all() if request.user.is_superuser else cls.objects.filter(organization=request.user.organization)
 
 
 class Cdr(models.Model):
@@ -61,8 +55,6 @@ class Cdr(models.Model):
         return f"{self.organization} - {self.campaign_name} : {self.name} {self.number}"
     
     @classmethod
-    def get_base_queryset(cls, request):
-        if request.user.is_superuser:
-            return cls.objects.all()
-        else:
-            return cls.objects.filter(organization=request.user.organization)
+    def get_base_queryset(cls, request):       
+        return cls.objects.all() if request.user.is_superuser else cls.objects.filter(organization=request.user.organization)
+    

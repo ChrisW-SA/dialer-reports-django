@@ -10,164 +10,246 @@
 
 {% block content %}
 
-<div class="row mb-5">
-    <div class="col-lg-2 col-md-12 col-sm-12 mx-auto">
-        <div class="info-box text-bg-secondary">
-            <span class="info-box-icon"> <i class="fa-solid fa-rectangle-list"></i> </span>
-            <div class="info-box-content">
-            <span class="info-box-text">Total Calls</span>
-            <span class="info-box-number">{{aggregates.total_calls}}</span>
-            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-            {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
+<!-- Page nav pills -->
+<ul class="nav nav-pills mb-5" id="pills-tab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="pills-overview-tab" data-bs-toggle="pill" data-bs-target="#pills-overview" type="button" role="tab" aria-controls="pills-overview" aria-selected="true">Overview</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="pills-agent-tab" data-bs-toggle="pill" data-bs-target="#pills-agent" type="button" role="tab" aria-controls="pills-agent" aria-selected="false">Agent Performance</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="pills-records-tab" data-bs-toggle="pill" data-bs-target="#pills-records" type="button" role="tab" aria-controls="pills-records" aria-selected="false">Campaign Records</button>
+  </li>
+</ul>
+
+<!-- Pills content -->
+<div class="tab-content" id="pills-tabContent">
+
+  <!--Overview-->
+  <div class="tab-pane fade show active" id="pills-overview" role="tabpanel" aria-labelledby="pills-overview-tab">
+
+    <!--Metric Cards-->
+    <div class="row mb-5">
+      <div class="col-lg-2 col-md-12 col-sm-12 mx-auto">
+          <div class="info-box text-bg-secondary">
+              <span class="info-box-icon"> <i class="fa-solid fa-rectangle-list"></i> </span>
+              <div class="info-box-content">
+              <span class="info-box-text">Total Calls</span>
+              <span class="info-box-number">{{aggregates.total_calls}}</span>
+              <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
+              {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
+              </div>
+              <!-- /.info-box-content -->
+          </div>
+      </div>
+      <div class="col-lg-2 col-md-12 col-sm-12 mx-auto">
+          <div class="info-box text-bg-secondary">
+              <span class="info-box-icon"> <i class="fa-solid fa-phone"></i></i> </span>
+              <div class="info-box-content">
+              <span class="info-box-text">Avg Talk Duration</span>
+              <span class="info-box-number">{{aggregates.avg_talk_duration|seconds_to_hms}}</span>
+              <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
+              {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
+              </div>
+              <!-- /.info-box-content -->
+          </div>
+      </div>
+      <div class="col-lg-2 col-md-12 col-sm-12 mx-auto">
+          <div class="info-box text-bg-secondary">
+              <span class="info-box-icon"> <i class="fa-solid fa-phone"></i></i> </span>
+              <div class="info-box-content">
+              <span class="info-box-text">Total Talk Duration</span>
+              <span class="info-box-number">{{aggregates.total_talk_duration|seconds_to_hms}}</span>
+              <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
+              {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
             </div>
             <!-- /.info-box-content -->
-        </div>
-    </div>
-    <div class="col-lg-2 col-md-12 col-sm-12 mx-auto">
-        <div class="info-box text-bg-secondary">
-            <span class="info-box-icon"> <i class="fa-solid fa-phone"></i></i> </span>
+          </div>
+      </div>
+      <div class="col-lg-2 col-md-12 col-sm-12 mx-auto">
+          <div class="info-box text-bg-secondary">
+            <span class="info-box-icon"> <i class="fa-solid fa-phone-volume"></i> </span>
             <div class="info-box-content">
-            <span class="info-box-text">Avg Talk Duration</span>
-            <span class="info-box-number">{{aggregates.avg_talk_duration|seconds_to_hms}}</span>
-            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-            {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
-            </div>
-            <!-- /.info-box-content -->
-        </div>
-    </div>
-    <div class="col-lg-2 col-md-12 col-sm-12 mx-auto">
-        <div class="info-box text-bg-secondary">
-            <span class="info-box-icon"> <i class="fa-solid fa-phone"></i></i> </span>
-            <div class="info-box-content">
-            <span class="info-box-text">Total Talk Duration</span>
-            <span class="info-box-number">{{aggregates.total_talk_duration|seconds_to_hms}}</span>
+            <span class="info-box-text">Avg Ring Duration</span>
+            <span class="info-box-number">{{aggregates.avg_ring_duration|seconds_to_hms}}</span>
             <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
             {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
           </div>
           <!-- /.info-box-content -->
-        </div>
+          </div>
+      </div>
+      <div class="col-lg-2 col-md-12 col-sm-12 mx-auto">
+          <div class="info-box text-bg-secondary">
+              <span class="info-box-icon"> <i class="fa-solid fa-phone-volume"></i> </span>
+              <div class="info-box-content">
+              <span class="info-box-text">Max Ring Duration</span>
+              <span class="info-box-number">{{aggregates.max_ring_duration|seconds_to_hms}}</span>
+              <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
+              {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
+              </div>
+              <!-- /.info-box-content -->
+          </div>
+      </div>
     </div>
-    <div class="col-lg-2 col-md-12 col-sm-12 mx-auto">
-        <div class="info-box text-bg-secondary">
-          <span class="info-box-icon"> <i class="fa-solid fa-phone-volume"></i> </span>
-          <div class="info-box-content">
-          <span class="info-box-text">Avg Ring Duration</span>
-          <span class="info-box-number">{{aggregates.avg_ring_duration|seconds_to_hms}}</span>
-          <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-          {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
-        </div>
-        <!-- /.info-box-content -->
-        </div>
-    </div>
-    <div class="col-lg-2 col-md-12 col-sm-12 mx-auto">
-        <div class="info-box text-bg-secondary">
-            <span class="info-box-icon"> <i class="fa-solid fa-phone-volume"></i> </span>
-            <div class="info-box-content">
-            <span class="info-box-text">Max Ring Duration</span>
-            <span class="info-box-number">{{aggregates.max_ring_duration|seconds_to_hms}}</span>
-            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-            {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
-            </div>
-            <!-- /.info-box-content -->
-        </div>
-    </div>
-</div>
 
-<div class="row mb-5">
-    <div class="col-lg-6 col-sm-12">
-        <div id="dispoChart"></div>
+    <div class="row mb-5">
+        <div class="col-lg-6 col-sm-12">
+            <div id="connectedVsDroppedPieChart"></div>
+        </div>
+        <div class="col-lg-6 col-sm-12">
+            <div id="dialResultChart"></div>
+        </div>
     </div>
-    <div class="col-lg-6 col-sm-12">
-        <div id="dialResultChart"></div>
-    </div>
-</div>
 
-<div class="row mb-5">
-    <div class="col-lg-6 col-sm-12 p-3 card">
+    <div class="row mb-5">
+        <div class="col-lg-6 col-sm-12 p-3">
+          <div id="dispoChart"></div>
+        </div>
+        <div class="col-lg-6 col-sm-12 ps-5">
+            <div id="agentCallsChart"></div>
+        </div>
+    </div>
+
+  </div>
+
+  <!--Agent Performance-->
+  <div class="tab-pane fade" id="pills-agent" role="tabpanel" aria-labelledby="pills-agent-tab">
+
+    <!--Calls per agent-->
+    <div class="row mb-5">
+      <div class="col-lg-6 col-sm-12 p-3">
+        <div class="card">
+          <div class="card-header">
+              <h3 class="card-title">Agent Call Performance</h3>
+          </div>
+          <div class="card-body">
+              <table id="agentCallPerformanceTable" class="table table-sm table-bordered table-striped">
+                  <thead>
+                      <th>Agent Extension</th>
+                      <th>Total Answered Calls</th>
+                      <th>Total Dispositions</th>
+                      <th>Avg Call Duration</th>
+                      <th>Total Call Duration</th>
+                  </thead>
+                  <tbody>
+                      {% for agent in agent_stats %}
+                      <tr>
+                          <td>{{agent.agent_extension}}</td>
+                          <td>{{agent.answered_calls}}</td>
+                          <td>{{agent.dispositions}}</td>
+                          <td>{{agent.avg_talk_duration|seconds_to_hms}}</td>
+                          <td>{{agent.total_talk_duration|seconds_to_hms}}</td>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 col-sm-12 p-3">
+        <div id="agentDispositionChart"></div>
+      </div>
+    </div>
+
+    <!-- Agent Dispositions -->
+    <div class="row mb-5">
+      <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Agent Performance</h3>
+          Agent Dispositions
         </div>
         <div class="card-body">
-            <table class="table">
-                <thead>
-                    <th>Agent Extension</th>
-                    <th>Total Answered Calls</th>
-                    <th>Avg Call Duration</th>
-                    <th>Total Call Duration</th>
-                </thead>
-                <tbody>
-                    {% for agent in agent_stats %}
+          <table id="agentDispositionTable" class="table table-sm table-bordered table-striped">
+            <thead>
+              <tr>
+                {% for header in headers %}
+                  <th>{{ header }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for agent in agent_dispositions %}
+                <tr>
+                  <td>{{ agent.agent_extension }}</td>
+                  {% for field in field_names %}
+                    {% if field != 'agent_extension' %}
+                      <td>{{ agent|get_item:field|default:0 }}</td>
+                    {% endif %}
+                  {% endfor %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!--Call Records-->
+  <div class="tab-pane fade" id="pills-records" role="tabpanel" aria-labelledby="pills-records-tab">
+
+    <div class="row mb-5">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Campaign Call Records</h3>
+            </div>
+            <div class="card-body">
+                <table id="callRecordTable" class="table table-sm table-bordered table-striped">
+                    <thead>
                     <tr>
-                        <td>{{agent.agent_extension}}</td>
-                        <td>{{agent.answered_calls}}</td>
-                        <td>{{agent.avg_talk_duration|seconds_to_hms}}</td>
-                        <td>{{agent.total_talk_duration|seconds_to_hms}}</td>
+                        <th>Time</th>
+                        <th>Name</th>
+                        <th>Number</th>
+                        <th>Number Type</th>
+                        <th>Agent Extension</th>
+                        <th>Dial Result</th>
+                        <th>Call Disposition</th>
+                        <th>Callback</th>
+                        <th>Ring Duration</th>
+                        <th>Talk Duration</th>
+                        <th>Call Duration</th>
+                        <th>Campaign</th>
+                        <th>Organization</th>
+                        <th>UID</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for r in records %}  
+                    <tr>
+                        <td>{{r.time|date:"d/m/Y H:m:s"}}</td>
+                        <td>{{r.name}}</td>
+                        <td>{{r.number}}</td>
+                        <td>{{r.number_type}}</td>
+                        <td>{{r.agent_extension}}</td>
+                        <td>{{r.dial_result}}</td>
+                        <td>{{r.call_disposition}}</td>
+                        <td>{{r.callback}}</td>
+                        <td>{{r.ring_duration}}</td>
+                        <td>{{r.talk_duration}}</td>
+                        <td>{{r.call_duration}}</td>
+                        <td>{{r.campaign_name}}</td>
+                        <td>{{r.organization}}</td>
+                        <td>{{r.uid}}</td>
+                        <td class="text-center">
+                          <a href="{% url 'dialer-reports-campaign-record-call-flow' r.id %}" class="text-primary">
+                                    <i class="fa-solid fa-sliders me-3"> </i>
+                          </a>
+                        </td>
                     </tr>
                     {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-    <div class="col-lg-6 col-sm-12 ps-5">
-        <div id="agentCallsChart"></div>
-    </div>
+
+  </div>
+
 </div>
 
-<div class="row mb-5">
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Campaign Call Records</h3>
-        </div>
-        <div class="card-body">
-            <table id="example1" class="table table-sm table-bordered table-striped">
-                <thead>
-                <tr>
-                    <th>Time</th>
-                    <th>Name</th>
-                    <th>Number</th>
-                    <th>Number Type</th>
-                    <th>Agent Extension</th>
-                    <th>Dial Result</th>
-                    <th>Call Disposition</th>
-                    <th>Callback</th>
-                    <th>Ring Duration</th>
-                    <th>Talk Duration</th>
-                    <th>Call Duration</th>
-                    <th>Campaign</th>
-                    <th>Organization</th>
-                    <th>UID</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for r in records %}  
-                <tr>
-                    <td>{{r.time|date:"d/m/Y H:m:s"}}</td>
-                    <td>{{r.name}}</td>
-                    <td>{{r.number}}</td>
-                    <td>{{r.number_type}}</td>
-                    <td>{{r.agent_extension}}</td>
-                    <td>{{r.dial_result}}</td>
-                    <td>{{r.call_disposition}}</td>
-                    <td>{{r.callback}}</td>
-                    <td>{{r.ring_duration}}</td>
-                    <td>{{r.talk_duration}}</td>
-                    <td>{{r.call_duration}}</td>
-                    <td>{{r.campaign_name}}</td>
-                    <td>{{r.organization}}</td>
-                    <td>{{r.uid}}</td>
-                    <td class="text-center">
-                      <a href="{% url 'dialer-reports-campaign-record-call-flow' r.id %}" class="text-primary">
-                                <i class="fa-solid fa-sliders me-3"> </i>
-                      </a>
-                    </td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
 {% endblock content %}
 
 
@@ -289,22 +371,147 @@
     chart.render();
 </script>
 
+<!--Connected vs Dropped Donut Chart-->
+<script>
+    var options = {
+      chart: {
+          type: 'donut',
+          height: 350,
+      },
+      title: {
+            text: 'Connected vs Dropped Calls',
+        },
+      series: {{ connected_vs_dropped_pie_chart_data.series }},
+      labels: {{ connected_vs_dropped_pie_chart_data.labels|safe }},
+      plotOptions: {
+          pie: {
+              donut: {
+                  size: '65%',  // Adjust the size of the donut hole (default: 65%)
+                  labels: {
+                      show: true,
+                      total: {
+                          show: true,
+                          label: 'Total Calls',
+                          color: '#373d3f',
+                          formatter: function (w) {
+                              return w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                          }
+                      }
+                  }
+              }
+          }
+      },
+      responsive: [{
+          breakpoint: 480,
+          options: {
+              chart: {
+                  width: 200
+              },
+              legend: {
+                  position: 'bottom'
+              }
+          }
+      }]
+    };
+
+    var chart = new ApexCharts(document.querySelector("#connectedVsDroppedPieChart"), options);
+    chart.render();
+</script>
+
+<!-- Agent Dispo % Bar Chart -->
+<script>
+  var options = {
+      chart: {
+          type: 'bar',
+          height: 350,
+          toolbar: { show: false }
+      },
+            title: {
+            text: 'Agent Call Dispostion Rate',
+        },
+      series: [{
+          name: 'Disposition Rate (%)',
+          data: {{ agent_disposition_percentage_chart_data.series|safe }}
+      }],
+      plotOptions: {
+          bar: {
+              horizontal: false,
+              borderRadius: 4,
+              distributed: true,  // Each bar gets a unique color
+              dataLabels: {
+                  position: 'top',  // Show percentages on top of bars
+              }
+          }
+      },
+      dataLabels: {
+          enabled: true,
+          formatter: function(val) {
+              return val.toFixed(1) + '%';  // Show 1 decimal place
+          },
+          offsetY: -20,  // Adjust label position
+          style: {
+              fontSize: '12px',
+              colors: ['#333']
+          }
+      },
+      xaxis: {
+          categories: {{ agent_disposition_percentage_chart_data.labels|safe }},
+          axisBorder: { show: false },
+          axisTicks: { show: false },
+          labels: {
+              style: {
+                  fontSize: '12px',
+                  fontWeight: 'bold'
+              }
+          }
+      },
+      yaxis: {
+          max: 100,  // Percentage scale (0-100%)
+          labels: {
+              formatter: function(val) {
+                  return val.toFixed(0) + '%';
+              }
+          }
+      },
+      tooltip: {
+          y: {
+              formatter: function(val) {
+                  return val.toFixed(1) + '%';
+              }
+          }
+      },
+      grid: {
+          borderColor: '#f1f1f1',  // Light grid lines
+          strokeDashArray: 3
+      }
+  };
+
+  var chart = new ApexCharts(
+      document.querySelector("#agentDispositionChart"),
+      options
+  );
+  chart.render();
+</script>
+
 <!--Data Tables-->
 <script>
   $(function () {
-    $("#example1").DataTable({
+    $("#callRecordTable").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
-      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-    $('#example2').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": false,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
-    });
+      "buttons": ["copy", "csv", "excel", "pdf", "colvis"]
+    }).buttons().container().appendTo('#callRecordTable_wrapper .col-md-6:eq(0)');
+    
+    $("#agentDispositionTable").DataTable({
+      "responsive": true, "lengthChange": false, "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "colvis"]
+    }).buttons().container().appendTo('#agentDispositionTable_wrapper .col-md-6:eq(0)');
+    
+    $("#agentCallPerformanceTable").DataTable({
+      "responsive": true, "lengthChange": false, "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf"]
+    }).buttons().container().appendTo('#agentCallPerformanceTable_wrapper .col-md-6:eq(0)');
   });
 </script>
+
+
 {% endblock js %}

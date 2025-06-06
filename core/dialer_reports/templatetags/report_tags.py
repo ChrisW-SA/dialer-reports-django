@@ -13,3 +13,8 @@ def seconds_to_hms(seconds):
     minutes = seconds // 60
     seconds %= 60
     return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key, 0)

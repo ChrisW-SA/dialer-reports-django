@@ -44,12 +44,10 @@ def logout_view(request):
 
 @login_required
 def home(request):
-
     
     # from dialer_reports.models import CampaignRecord, Cdr
     # CampaignRecord.objects.all().delete()
     # Cdr.objects.all().delete()
-
 
     return render(request, "core/home.html", context={"sidebar_menu": "home-page"})
 

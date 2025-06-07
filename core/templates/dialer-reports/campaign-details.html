@@ -11,14 +11,14 @@
 {% block content %}
 
 <!-- Page nav pills -->
-<ul class="nav nav-pills mb-5" id="pills-tab" role="tablist">
-  <li class="nav-item" role="presentation">
+<ul class="nav nav-pills mb-3 mb-lg-5 flex-nowrap overflow-auto" id="pills-tab" role="tablist" style="white-space: nowrap;">
+  <li class="nav-item flex-shrink-0" role="presentation">
     <button class="nav-link active" id="pills-overview-tab" data-bs-toggle="pill" data-bs-target="#pills-overview" type="button" role="tab" aria-controls="pills-overview" aria-selected="true">Overview</button>
   </li>
-  <li class="nav-item" role="presentation">
+  <li class="nav-item flex-shrink-0" role="presentation">
     <button class="nav-link" id="pills-agent-tab" data-bs-toggle="pill" data-bs-target="#pills-agent" type="button" role="tab" aria-controls="pills-agent" aria-selected="false">Agent Performance</button>
   </li>
-  <li class="nav-item" role="presentation">
+  <li class="nav-item flex-shrink-0" role="presentation">
     <button class="nav-link" id="pills-records-tab" data-bs-toggle="pill" data-bs-target="#pills-records" type="button" role="tab" aria-controls="pills-records" aria-selected="false">Campaign Records</button>
   </li>
 </ul>
@@ -29,86 +29,86 @@
   <!--Overview-->
   <div class="tab-pane fade show active" id="pills-overview" role="tabpanel" aria-labelledby="pills-overview-tab">
 
-    <!--Metric Cards-->
-    <div class="row mb-5">
-      <div class="col-lg-2 col-md-12 col-sm-12 mx-auto">
-          <div class="info-box text-bg-secondary">
-              <span class="info-box-icon"> <i class="fa-solid fa-rectangle-list"></i> </span>
-              <div class="info-box-content">
-              <span class="info-box-text">Total Calls</span>
-              <span class="info-box-number">{{aggregates.total_calls}}</span>
-              <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-              {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
-              </div>
-              <!-- /.info-box-content -->
+    <!-- Metric Cards -->
+    <div class="row mb-3 mb-lg-5 g-2 gx-lg-3 justify-content-center">
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2 mx-auto">
+        <div class="info-box text-bg-secondary h-100">
+          <span class="info-box-icon"><i class="fa-solid fa-rectangle-list"></i></span>
+          <div class="info-box-content">
+            <span class="info-box-text">Total Calls</span>
+            <span class="info-box-number">{{aggregates.total_calls}}</span>
+            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
           </div>
+        </div>
       </div>
-      <div class="col-lg-2 col-md-12 col-sm-12 mx-auto">
-          <div class="info-box text-bg-secondary">
-              <span class="info-box-icon"> <i class="fa-solid fa-phone"></i></i> </span>
-              <div class="info-box-content">
-              <span class="info-box-text">Avg Talk Duration</span>
-              <span class="info-box-number">{{aggregates.avg_talk_duration|seconds_to_hms}}</span>
-              <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-              {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
-              </div>
-              <!-- /.info-box-content -->
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2 mx-auto">
+        <div class="info-box text-bg-secondary h-100">
+          <span class="info-box-icon"><i class="fa-solid fa-phone"></i></span>
+          <div class="info-box-content">
+            <span class="info-box-text">Avg Talk Duration</span>
+            <span class="info-box-number">{{aggregates.avg_talk_duration|seconds_to_hms}}</span>
+            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
           </div>
+        </div>
       </div>
-      <div class="col-lg-2 col-md-12 col-sm-12 mx-auto">
-          <div class="info-box text-bg-secondary">
-              <span class="info-box-icon"> <i class="fa-solid fa-phone"></i></i> </span>
-              <div class="info-box-content">
-              <span class="info-box-text">Total Talk Duration</span>
-              <span class="info-box-number">{{aggregates.total_talk_duration|seconds_to_hms}}</span>
-              <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-              {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
-            </div>
-            <!-- /.info-box-content -->
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2 mx-auto">
+        <div class="info-box text-bg-secondary h-100">
+          <span class="info-box-icon"><i class="fa-solid fa-rectangle-list"></i></span>
+          <div class="info-box-content">
+            <span class="info-box-text">Total Talk Duration</span>
+            <span class="info-box-number">{{aggregates.total_talk_duration|seconds_to_hms}}</span>
+            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
           </div>
+        </div>
       </div>
-      <div class="col-lg-2 col-md-12 col-sm-12 mx-auto">
-          <div class="info-box text-bg-secondary">
-            <span class="info-box-icon"> <i class="fa-solid fa-phone-volume"></i> </span>
-            <div class="info-box-content">
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2 mx-auto">
+        <div class="info-box text-bg-secondary h-100">
+          <span class="info-box-icon"><i class="fa-solid fa-phone"></i></span>
+          <div class="info-box-content">
             <span class="info-box-text">Avg Ring Duration</span>
             <span class="info-box-number">{{aggregates.avg_ring_duration|seconds_to_hms}}</span>
             <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-            {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
           </div>
-          <!-- /.info-box-content -->
-          </div>
+        </div>
       </div>
-      <div class="col-lg-2 col-md-12 col-sm-12 mx-auto">
-          <div class="info-box text-bg-secondary">
-              <span class="info-box-icon"> <i class="fa-solid fa-phone-volume"></i> </span>
-              <div class="info-box-content">
-              <span class="info-box-text">Max Ring Duration</span>
-              <span class="info-box-number">{{aggregates.max_ring_duration|seconds_to_hms}}</span>
-              <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-              {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
-              </div>
-              <!-- /.info-box-content -->
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2 mx-auto">
+        <div class="info-box text-bg-secondary h-100">
+          <span class="info-box-icon"><i class="fa-solid fa-phone"></i></span>
+          <div class="info-box-content">
+            <span class="info-box-text">Max Ring Duration</span>
+            <span class="info-box-number">{{aggregates.max_ring_duration|seconds_to_hms}}</span>
+            <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
           </div>
+        </div>
       </div>
     </div>
 
-    <div class="row mb-5">
-        <div class="col-lg-6 col-sm-12">
-            <div id="connectedVsDroppedPieChart"></div>
+    <!-- First Chart Row -->
+    <div class="row mb-3 mb-lg-5">
+      <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+        <div class="chart-container" style="min-height: 300px;">
+          <div id="connectedVsDroppedPieChart"></div>
         </div>
-        <div class="col-lg-6 col-sm-12">
-            <div id="dialResultChart"></div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="chart-container" style="min-height: 300px;">
+          <div id="dialResultChart"></div>
         </div>
+      </div>
     </div>
 
-    <div class="row mb-5">
-        <div class="col-lg-6 col-sm-12 p-3">
+    <!-- Second Chart Row -->
+    <div class="row">
+      <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+        <div class="chart-container" style="min-height: 300px;">
           <div id="dispoChart"></div>
         </div>
-        <div class="col-lg-6 col-sm-12 ps-5">
-            <div id="agentCallsChart"></div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="chart-container" style="min-height: 300px;">
+          <div id="agentCallsChart"></div>
         </div>
+      </div>
     </div>
 
   </div>
@@ -117,70 +117,98 @@
   <div class="tab-pane fade" id="pills-agent" role="tabpanel" aria-labelledby="pills-agent-tab">
 
     <!--Calls per agent-->
-    <div class="row mb-5">
-      <div class="col-lg-6 col-sm-12 p-3">
-        <div class="card">
+    <div class="row mb-3 mb-lg-5 g-3">
+
+      <!--Agent Call Performance Table -->
+      <div class="col-12 col-lg-6">
+        <div class="card h-100">
           <div class="card-header">
-              <h3 class="card-title">Agent Call Performance</h3>
+            <h3 class="card-title">Agent Call Performance</h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="maximize">
+                <i class="fas fa-expand"></i>
+              </button>
+            </div>
           </div>
-          <div class="card-body">
-              <table id="agentCallPerformanceTable" class="table table-sm table-bordered table-striped">
-                  <thead>
-                      <th>Agent Extension</th>
-                      <th>Total Answered Calls</th>
-                      <th>Total Dispositions</th>
-                      <th>Avg Call Duration</th>
-                      <th>Total Call Duration</th>
-                  </thead>
-                  <tbody>
-                      {% for agent in agent_stats %}
-                      <tr>
-                          <td>{{agent.agent_extension}}</td>
-                          <td>{{agent.answered_calls}}</td>
-                          <td>{{agent.dispositions}}</td>
-                          <td>{{agent.avg_talk_duration|seconds_to_hms}}</td>
-                          <td>{{agent.total_talk_duration|seconds_to_hms}}</td>
-                      </tr>
-                      {% endfor %}
-                  </tbody>
+          <div class="card-body p-3">
+            <div class="table-responsive" style="max-height: 400px;">
+              <table id="agentCallPerformanceTable" class="table table-sm table-bordered table-striped mb-0">
+                <thead class="sticky-top bg-light">
+                  <tr>
+                    <th>Agent</th>
+                    <th class="text-end">Answered</th>
+                    <th class="text-end">Dispositions</th>
+                    <th class="text-end">Avg Duration</th>
+                    <th class="text-end">Total Duration</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for agent in agent_stats %}
+                  <tr>
+                    <td>{{agent.agent_extension}}</td>
+                    <td class="text-end">{{agent.answered_calls}}</td>
+                    <td class="text-end">{{agent.dispositions}}</td>
+                    <td class="text-end">{{agent.avg_talk_duration|seconds_to_hms}}</td>
+                    <td class="text-end">{{agent.total_talk_duration|seconds_to_hms}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
               </table>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="col-lg-6 col-sm-12 p-3">
-        <div id="agentDispositionChart"></div>
+      <!--Agent Dispo Rate Chart -->
+      <div class="col-12 col-lg-6">
+        <div class="card h-100">
+          <div class="card-header">
+            <h3 class="card-title">Agent Disposition Rate</h3>
+          </div>
+          <div class="card-body p-0">
+            <div id="agentDispositionChart" style="min-height: 400px;"></div>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Agent Dispositions -->
-    <div class="row mb-5">
-      <div class="card">
-        <div class="card-header">
-          Agent Dispositions
-        </div>
-        <div class="card-body">
-          <table id="agentDispositionTable" class="table table-sm table-bordered table-striped">
-            <thead>
-              <tr>
-                {% for header in headers %}
-                  <th>{{ header }}</th>
-                {% endfor %}
-              </tr>
-            </thead>
-            <tbody>
-              {% for agent in agent_dispositions %}
-                <tr>
-                  <td>{{ agent.agent_extension }}</td>
-                  {% for field in field_names %}
-                    {% if field != 'agent_extension' %}
-                      <td>{{ agent|get_item:field|default:0 }}</td>
-                    {% endif %}
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Agent Dispositions</h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="maximize">
+                <i class="fas fa-expand"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card-body p-3">
+            <div class="table-responsive" style="max-height: 500px;">
+              <table id="agentDispositionTable" class="table table-sm table-bordered table-striped mb-0">
+                <thead class="sticky-top bg-light">
+                  <tr>
+                    {% for header in headers %}
+                    <th>{{ header }}</th>
+                    {% endfor %}
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for agent in agent_dispositions %}
+                  <tr>
+                    <td>{{ agent.agent_extension }}</td>
+                    {% for field in field_names %}
+                      {% if field != 'agent_extension' %}
+                      <td class="text-end">{{ agent|get_item:field|default:0 }}</td>
+                      {% endif %}
+                    {% endfor %}
+                  </tr>
                   {% endfor %}
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -189,65 +217,81 @@
 
   <!--Call Records-->
   <div class="tab-pane fade" id="pills-records" role="tabpanel" aria-labelledby="pills-records-tab">
-
-    <div class="row mb-5">
+    <div class="row">
+      <div class="col-12">
         <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Campaign Call Records</h3>
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title mb-0">Campaign Call Records</h3>
+            <div>
+              <button type="button" class="btn btn-tool" data-card-widget="maximize">
+                <i class="fas fa-expand"></i>
+              </button>
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
             </div>
-            <div class="card-body">
-                <table id="callRecordTable" class="table table-sm table-bordered table-striped">
-                    <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Name</th>
-                        <th>Number</th>
-                        <th>Number Type</th>
-                        <th>Agent Extension</th>
-                        <th>Dial Result</th>
-                        <th>Call Disposition</th>
-                        <th>Callback</th>
-                        <th>Ring Duration</th>
-                        <th>Talk Duration</th>
-                        <th>Call Duration</th>
-                        <th>Campaign</th>
-                        <th>Organization</th>
-                        <th>UID</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for r in records %}  
-                    <tr>
-                        <td>{{r.time|date:"d/m/Y H:m:s"}}</td>
-                        <td>{{r.name}}</td>
-                        <td>{{r.number}}</td>
-                        <td>{{r.number_type}}</td>
-                        <td>{{r.agent_extension}}</td>
-                        <td>{{r.dial_result}}</td>
-                        <td>{{r.call_disposition}}</td>
-                        <td>{{r.callback}}</td>
-                        <td>{{r.ring_duration}}</td>
-                        <td>{{r.talk_duration}}</td>
-                        <td>{{r.call_duration}}</td>
-                        <td>{{r.campaign_name}}</td>
-                        <td>{{r.organization}}</td>
-                        <td>{{r.uid}}</td>
-                        <td class="text-center">
-                          <a href="{% url 'dialer-reports-campaign-record-call-flow' r.id %}" class="text-primary">
-                                    <i class="fa-solid fa-sliders me-3"> </i>
-                          </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+          </div>
+          <div class="card-body p-3">
+            <div class="table-responsive">
+              <table id="callRecordTable" class="table table-sm table-bordered table-striped table-hover mb-0" style="width:100%">
+                <thead class="bg-light">
+                  <tr>
+                    <th>Time</th>
+                    <th>Name</th>
+                    <th>Number</th>
+                    <th>Type</th>
+                    <th>Agent</th>
+                    <th>Result</th>
+                    <th>Disposition</th>
+                    <th>Callback</th>
+                    <th>Ring</th>
+                    <th>Talk</th>
+                    <th>Duration</th>
+                    <th>Campaign</th>
+                    <th>Org</th>
+                    <th>UID</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for r in records %}  
+                  <tr>
+                    <td data-order="{{r.time|date:'U'}}">{{r.time|date:"d/m/Y H:i"}}</td>
+                    <td>{{r.name|default:"-"}}</td>
+                    <td>{{r.number|default:"-"}}</td>
+                    <td>{{r.number_type|default:"-"}}</td>
+                    <td>{{r.agent_extension|default:"-"}}</td>
+                    <td><span class="badge bg-{{r.dial_result|dial_result_badge_color}}">{{r.dial_result}}</span></td>
+                    <td><span class="badge bg-{{r.call_disposition|disposition_badge_color}}">{{r.call_disposition|default:"-"}}</span></td>
+                    <td>{{r.callback|yesno:"Yes,No"}}</td>
+                    <td data-order="{{r.ring_duration}}">{{r.ring_duration|seconds_to_hms}}</td>
+                    <td data-order="{{r.talk_duration}}">{{r.talk_duration|seconds_to_hms}}</td>
+                    <td data-order="{{r.call_duration}}">{{r.call_duration|seconds_to_hms}}</td>
+                    <td>{{r.campaign_name|truncatechars:15}}</td>
+                    <td>{{r.organization|truncatechars:10}}</td>
+                    <td>{{r.uid|truncatechars:8}}</td>
+                    <td class="text-center">
+                      <a href="{% url 'dialer-reports-campaign-record-call-flow' r.id %}" 
+                        class="btn btn-sm btn-outline-primary" 
+                        title="Call Flow"
+                        data-bs-toggle="tooltip">
+                        <i class="fa-solid fa-sliders"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
+          </div>
+          <div class="card-footer text-muted">
+            Showing {{ records|length }} records
+          </div>
         </div>
+      </div>
     </div>
-
   </div>
-
+  
 </div>
 
 {% endblock content %}
@@ -255,163 +299,223 @@
 
 
 {% block js %}
-<!--Agent Answred Calls Pie Chart-->
+
+<!-- Agent Answered Calls Pie Chart-->
 <script>
     var options = {
         series: {{agent_answered_counts}},
         chart: {
-            width: 500,
             type: 'pie',
+            height: '100%',  // Use percentage-based height
+            width: '100%',   // Use percentage-based width
+            parentHeightOffset: 0, // Prevents chart from collapsing
+            animations: { enabled: false }, // Better for dashboard performance
+            toolbar: {
+                show: true,
+                tools: {
+                    download: true,
+                    selection: false,
+                    zoom: false,
+                    zoomin: false,
+                    zoomout: false,
+                    pan: false,
+                    reset: true
+                },
+                export: {
+                    csv: false,
+                    svg: false,
+                    png: true
+                }
+            }
         },
         labels: {{agent_answered_labels|safe}},
         title: {
             text: 'Answered Calls Per Agent',
+            align: 'left',
+            style: { fontSize: '14px' } // Smaller title on mobile
+        },
+        legend: {
+            position: 'bottom',
+            horizontalAlign: 'center',
+            fontSize: '12px'
         },
         responsive: [{
-            breakpoint: 480,
+            breakpoint: 768,
             options: {
-                chart: {
-                    width: 200
-                },
-                legend: {
-                    position: 'bottom'
-                }
+                chart: { height: 300 },
+                legend: { position: 'bottom' }
             }
-        }]
+        }],
+        dataLabels: { 
+            enabled: true,
+            formatter: function(val, { seriesIndex, w }) {
+                return w.config.series[seriesIndex]
+            },
+            style: { fontSize: '10px' }
+        }
     };
 
     var chart = new ApexCharts(document.querySelector("#agentCallsChart"), options);
     chart.render();
 </script>
 
-<!--Dial Result Bar Chart-->
+<!-- Dial Result Bar Chart -->
 <script>
     var options = {
-        series: [{
-          name: 'Count',
-          data: {{dial_result_counts}}
-        }],
-          chart: {
-          type: 'bar',
-          height: 350
+        series: [{ name: 'Count', data: {{dial_result_counts}} }],
+        chart: {
+            type: 'bar',
+            height: '100%',
+            width: '100%',
+            //toolbar: { show: false },
+            animations: { enabled: false }
         },
         title: {
             text: 'Dial Results',
+            align: 'left',
+            style: { fontSize: '14px' }
         },
         plotOptions: {
-          bar: {
-            borderRadius: 4,
-            borderRadiusApplication: 'end',
-            horizontal: true,
-          }
+            bar: {
+                borderRadius: 4,
+                horizontal: true,
+                distributed: true // Better for categorical data
+            }
         },
-        dataLabels: {
-          enabled: false
-        },
+        dataLabels: { enabled: false },
         xaxis: {
-          categories: {{dial_result_labels|safe}},
-        }
+            categories: {{dial_result_labels|safe}},
+            labels: { show: true, trim: true, style: { fontSize: '10px' } }
+        },
+        yaxis: {
+            labels: { style: { fontSize: '10px' } }
+        },
+        responsive: [{
+            breakpoint: 600,
+            options: {
+                plotOptions: { bar: { barHeight: '50%' } },
+                xaxis: { labels: { rotate: -45 } }
+            }
+        }]
     };
 
     var chart = new ApexCharts(document.querySelector("#dialResultChart"), options);
     chart.render();
 </script>
 
-<!--Dispositions Bar Chart-->
+<!-- Dispositions Bar Chart -->
 <script>
     var options = {
-        series: [{
-          name: 'Count',
-          data: {{dispo_counts}}
-        },],
+        series: [{ name: 'Count', data: {{dispo_counts}} }],
         chart: {
-          type: 'bar',
-          height: 350
+            type: 'bar',
+            height: '100%',
+            width: '100%',
+            stacked: false,
         },
         title: {
             text: 'Dispositions',
+            align: 'left',
+            style: { fontSize: '14px' }
         },
         plotOptions: {
-          bar: {
-            horizontal: false,
-            columnWidth: '55%',
-            borderRadius: 5,
-            borderRadiusApplication: 'end'
-          },
+            bar: {
+                horizontal: false,
+                columnWidth: '70%',
+                borderRadius: 4,
+                dataLabels: { position: 'top' }
+            }
         },
         dataLabels: {
-          enabled: false
-        },
-        stroke: {
-          show: true,
-          width: 2,
-          colors: ['transparent']
+            enabled: true,
+            formatter: function(val) { return val > 0 ? val : '' },
+            style: { fontSize: '10px' }
         },
         xaxis: {
-          categories: {{dispo_labels|safe}},
+            categories: {{dispo_labels|safe}},
+            labels: { style: { fontSize: '10px' }, rotate: -45 }
         },
-        yaxis: {
-          title: {
-            text: ''
-          }
-        },
-        fill: {
-          opacity: 1
-        },
-        tooltip: {
-          {% comment %} y: {
-            formatter: function (val) {
-              return "$ " + val + " thousands"
+        yaxis: { labels: { style: { fontSize: '10px' } } },
+        responsive: [{
+            breakpoint: 600,
+            options: {
+                plotOptions: { bar: { columnWidth: '50%' } },
+                dataLabels: { enabled: false }
             }
-          } {% endcomment %}
-        }
+        }]
     };
 
     var chart = new ApexCharts(document.querySelector("#dispoChart"), options);
     chart.render();
 </script>
 
-<!--Connected vs Dropped Donut Chart-->
+<!-- Connected vs Drpped Donut Chart -->
 <script>
     var options = {
-      chart: {
-          type: 'donut',
-          height: 350,
-      },
-      title: {
-            text: 'Connected vs Dropped Calls',
+        chart: {
+            type: 'donut',
+            height: '100%',
+            width: '100%',
+            animations: { enabled: false },
+            toolbar: {
+                show: true,
+                tools: {
+                    download: true,
+                    selection: false,
+                    zoom: false,
+                    zoomin: false,
+                    zoomout: false,
+                    pan: false,
+                    reset: true
+                },
+                export: {
+                    csv: false,
+                    svg: false,
+                    png: true
+                }
+            }
         },
-      series: {{ connected_vs_dropped_pie_chart_data.series }},
-      labels: {{ connected_vs_dropped_pie_chart_data.labels|safe }},
-      plotOptions: {
-          pie: {
-              donut: {
-                  size: '65%',  // Adjust the size of the donut hole (default: 65%)
-                  labels: {
-                      show: true,
-                      total: {
-                          show: true,
-                          label: 'Total Calls',
-                          color: '#373d3f',
-                          formatter: function (w) {
-                              return w.globals.seriesTotals.reduce((a, b) => a + b, 0);
-                          }
-                      }
-                  }
-              }
-          }
-      },
-      responsive: [{
-          breakpoint: 480,
-          options: {
-              chart: {
-                  width: 200
-              },
-              legend: {
-                  position: 'bottom'
-              }
-          }
-      }]
+        title: {
+            text: 'Connected vs Dropped Calls',
+            align: 'left',
+            style: { fontSize: '14px' }
+        },
+        series: {{ connected_vs_dropped_pie_chart_data.series }},
+        labels: {{ connected_vs_dropped_pie_chart_data.labels|safe }},
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '65%',
+                    labels: {
+                        show: true,
+                        total: {
+                            show: true,
+                            label: 'Total',
+                            fontSize: '12px',
+                            formatter: function(w) {
+                                return w.globals.seriesTotals.reduce((a,b) => a+b, 0)
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        legend: {
+            position: 'bottom',
+            horizontalAlign: 'center',
+            fontSize: '12px'
+        },
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: { height: 300 },
+                legend: { position: 'bottom' }
+            }
+        }],
+        dataLabels: {
+            enabled: true,
+            style: { fontSize: '10px' }
+        }
     };
 
     var chart = new ApexCharts(document.querySelector("#connectedVsDroppedPieChart"), options);
@@ -420,6 +524,112 @@
 
 <!-- Agent Dispo % Bar Chart -->
 <script>
+  // Agent Disposition Percentage Bar Chart
+  var options = {
+    chart: {
+      type: 'bar',
+      height: '100%',
+      parentHeightOffset: 0,
+      toolbar: {
+        show: true,
+        tools: {
+          download: true,
+          selection: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true
+        },
+        export: {
+          csv: false,
+          svg: true,
+          png: true
+        }
+      }
+    },
+    series: [{
+      name: 'Disposition Rate',
+      data: {{ agent_disposition_percentage_chart_data.series|safe }}
+    }],
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        borderRadius: 4,
+        columnWidth: '70%',
+        dataLabels: {
+          position: 'top'
+        }
+      }
+    },
+    dataLabels: {
+      enabled: true,
+      formatter: function(val) {
+        return val.toFixed(1) + '%';
+      },
+      offsetY: -20,
+      style: {
+        fontSize: '11px',
+        colors: ['#333']
+      }
+    },
+    xaxis: {
+      categories: {{ agent_disposition_percentage_chart_data.labels|safe }},
+      labels: {
+        style: {
+          fontSize: '12px'
+        },
+        trim: true
+      }
+    },
+    yaxis: {
+      max: 100,
+      labels: {
+        formatter: function(val) {
+          return val.toFixed(0) + '%';
+        },
+        style: {
+          fontSize: '12px'
+        }
+      }
+    },
+    tooltip: {
+      y: {
+        formatter: function(val) {
+          return val.toFixed(1) + '%';
+        }
+      }
+    },
+    responsive: [{
+      breakpoint: 768,
+      options: {
+        plotOptions: {
+          bar: {
+            columnWidth: '50%'
+          }
+        },
+        dataLabels: {
+          style: {
+            fontSize: '10px'
+          }
+        }
+      }
+    }]
+  };
+
+  var chart = new ApexCharts(
+    document.querySelector("#agentDispositionChart"),
+    options
+  );
+  chart.render();
+</script>
+
+
+
+
+
+<!-- Agent Dispo % Bar Chart -->
+{% comment %} <script>
   var options = {
       chart: {
           type: 'bar',
@@ -491,7 +701,7 @@
       options
   );
   chart.render();
-</script>
+</script> {% endcomment %}
 
 <!--Data Tables-->
 <script>
@@ -513,5 +723,23 @@
   });
 </script>
 
+{% comment %} <script>
+  // Initialize DataTables
+  $(document).ready(function() {
+    $('#agentCallPerformanceTable').DataTable({
+      responsive: true,
+      dom: '<"top"f>rt<"bottom"lip><"clear">',
+      pageLength: 10,
+      order: [[1, 'desc']]
+    });
 
+    $('#agentDispositionTable').DataTable({
+      responsive: true,
+      dom: '<"top"f>rt<"bottom"lip><"clear">',
+      pageLength: 10,
+      scrollX: true,
+      order: [[0, 'asc']]
+    });
+  });
+</script> {% endcomment %}
 {% endblock js %}

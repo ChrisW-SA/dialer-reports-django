@@ -18,3 +18,24 @@ def seconds_to_hms(seconds):
 @register.filter
 def get_item(dictionary, key):
     return dictionary.get(key, 0)
+
+
+@register.filter
+def dial_result_badge_color(value):
+    color_map = {
+        'F-Failed': 'danger',
+        'R-Abandon': 'danger',
+        'R-No Answer': 'warning',
+        'C-Completed': 'success',
+        'R-Timeout': 'warning',
+        # Add other mappings as needed
+    }
+    return color_map.get(value, 'secondary')
+
+@register.filter
+def disposition_badge_color(value):
+    color_map = {
+        '': 'danger',
+        # Add other mappings as needed
+    }
+    return color_map.get(value, 'info')

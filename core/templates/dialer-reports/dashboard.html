@@ -7,138 +7,136 @@
 {% block page_title %} Dashboard {% endblock page_title %}
 
 
-
 {% block content %}
 
-{% if not base_queryset %}
-  <!-- Show empty state only when NO DATA EXISTS AT ALL -->
-  <div class="container text-center py-5">
-    <div class="row justify-content-center">
-      <div class="col-12 col-md-8 col-lg-6">
-        <h4>There is no data to display</h4>
-        <p>Please upload campaign data and return to the dashboard.</p>
-        <a href="{% url 'dialer-reports-campaigns' %}" class="btn btn-outline-primary my-3" style="width: 10rem;">Go to Campaigns</a>
-        <img src="/static/assets/img/noData.png" alt="No Data Icon" class="img-fluid" style="max-height: 500px;">
+  {% if not base_queryset %}
+      <!-- Show empty state only when NO DATA EXISTS AT ALL -->
+      <div class="container text-center py-5">
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-8 col-lg-6">
+            <h4>There is no data to display</h4>
+            <p>Please upload campaign data and return to the dashboard.</p>
+            <a href="{% url 'dialer-reports-campaigns' %}" class="btn btn-outline-primary my-3" style="width: 10rem;">Go to Campaigns</a>
+            <img src="/static/assets/img/noData.png" alt="No Data Icon" class="img-fluid" style="max-height: 500px;">
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-{% elif not queryset %} <!-- If no data for the selected date period. -->
-  <!-- Filter -->
-  <div class="row mb-3 pe-5 me-2">
-    <div class="col d-flex justify-content-end">
-      <form method="get" class="d-flex align-items-center">
-        {% for field in filter.form %}
-          <div class="me-3">
-            {{ field.label_tag }}
-            {{ field }}
-          </div>
-        {% endfor %}
-        <button type="submit" class="btn btn-primary mt-4">Filter</button>
-      </form>
-    </div>
-  </div>
-
-  <!--No data warning-->
-  <div class="container text-center py-5">
-    <div class="row justify-content-center">
-      <div class="col-12 col-md-8 col-lg-6">
-        <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
-        <h4 class="mb-3">No Data Available For The Selected Time Period</h4>
-        <p class="text-muted">Please adjust the filters to view a different time period</p>
+  {% elif not queryset %} <!-- If no data for the selected date period. -->
+    <!-- Filter -->
+    <div class="row mb-3 pe-5 me-2">
+      <div class="col d-flex justify-content-end">
+        <form method="get" class="d-flex align-items-center">
+          {% for field in filter.form %}
+            <div class="me-3">
+              {{ field.label_tag }}
+              {{ field }}
+            </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-primary mt-4">Filter</button>
+        </form>
       </div>
     </div>
-  </div>
 
-{% else %} <!-- If data exists, display dashboard -->
-  <!-- Filter -->
-  <div class="row mb-3 pe-5 me-2">
-    <div class="col d-flex justify-content-end">
-      <form method="get" class="d-flex align-items-center">
-        {% for field in filter.form %}
-          <div class="me-3">
-            {{ field.label_tag }}
-            {{ field }}
-          </div>
-        {% endfor %}
-        <button type="submit" class="btn btn-primary mt-4">Filter</button>
-      </form>
+    <!--No data warning-->
+    <div class="container text-center py-5">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+          <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+          <h4 class="mb-3">No Data Available For The Selected Time Period</h4>
+          <p class="text-muted">Please adjust the filters to view a different time period</p>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- Metric Cards -->
-  <div class="row mb-4">
-      <div class="col-md-2 col-sm-6 col-12 mx-auto">
-          <div class="info-box text-bg-primary">
-              <span class="info-box-icon"> <i class="fa-solid fa-list-check"></i> </span>
-              <div class="info-box-content">
-              <span class="info-box-text">Total Campaigns</span>
-              <span class="info-box-number">{{aggregates.total_campaigns}}</span>
-              <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-              {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
-              </div>
-              <!-- /.info-box-content -->
-          </div>
+  {% else %} <!-- If data exists, display dashboard -->
+    <!-- Filter -->
+    <div class="row mb-3 pe-5 me-2">
+      <div class="col d-flex justify-content-end">
+        <form method="get" class="d-flex align-items-center">
+          {% for field in filter.form %}
+            <div class="me-3">
+              {{ field.label_tag }}
+              {{ field }}
+            </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-primary mt-4">Filter</button>
+        </form>
       </div>
-      <div class="col-md-2 col-sm-6 col-12 mx-auto">
-          <div class="info-box text-bg-primary">
-              <span class="info-box-icon"> <i class="fa-solid fa-phone"></i> </span>
-              <div class="info-box-content">
-              <span class="info-box-text">Total Calls</span>
-              <span class="info-box-number">{{aggregates.total_calls}}</span>
-              <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-              {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
-              </div>
-              <!-- /.info-box-content -->
-          </div>
-      </div>
-      <div class="col-md-2 col-sm-6 col-12 mx-auto">
-          <div class="info-box text-bg-primary">
-              <span class="info-box-icon"> <i class="fa-solid fa-phone-volume"></i> </span>
-              <div class="info-box-content">
-              <span class="info-box-text">Total Talk Duration</span>
-              <span class="info-box-number">{{aggregates.total_talk_duration|seconds_to_hms}}</span>
-              <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-              {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
-              </div>
-              <!-- /.info-box-content -->
-          </div>
-      </div>
-      <div class="col-md-2 col-sm-6 col-12 mx-auto">
-          <div class="info-box text-bg-primary">
-              <span class="info-box-icon"> <i class="fa-solid fa-phone-volume"></i> </span>
-              <div class="info-box-content">
-              <span class="info-box-text">Average Talk Duration</span>
-              <span class="info-box-number">{{avg_talk_duration|seconds_to_hms}}</span>
-              <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-              {% comment %} <span class="progress-description"> 70% Increase in 30 Days </span> {% endcomment %}
-              </div>
-              <!-- /.info-box-content -->
-          </div>
-      </div>
-  </div>
+    </div>
 
-  <!-- Chart Row 1 -->
-  <div class="row mb-4">
-      <div class="col-sm-12 col-md-6">
-          <div id="dialResultDonutChart"></div>
-      </div>
-      <div class="col-sm-12 col-md-6">
-          <div id="dispoChart"></div>
-      </div>
-  </div>
+    <!-- Metric Cards -->
+    <div class="row mb-4">
+        <div class="col-md-2 col-sm-6 col-12 mx-auto">
+            <div class="info-box text-bg-primary">
+                <span class="info-box-icon"> <i class="fa-solid fa-list-check"></i> </span>
+                <div class="info-box-content">
+                <span class="info-box-text">Total Campaigns</span>
+                <span class="info-box-number">{{aggregates.total_campaigns}}</span>
+                <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-6 col-12 mx-auto">
+            <div class="info-box text-bg-primary">
+                <span class="info-box-icon"> <i class="fa-solid fa-phone"></i> </span>
+                <div class="info-box-content">
+                <span class="info-box-text">Total Calls</span>
+                <span class="info-box-number">{{aggregates.total_calls}}</span>
+                <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-6 col-12 mx-auto">
+            <div class="info-box text-bg-primary">
+                <span class="info-box-icon"> <i class="fa-solid fa-phone-volume"></i> </span>
+                <div class="info-box-content">
+                <span class="info-box-text">Total Talk Duration</span>
+                <span class="info-box-number">{{aggregates.total_talk_duration|seconds_to_hms}}</span>
+                <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-6 col-12 mx-auto">
+            <div class="info-box text-bg-primary">
+                <span class="info-box-icon"> <i class="fa-solid fa-phone-volume"></i> </span>
+                <div class="info-box-content">
+                <span class="info-box-text">Average Talk Duration</span>
+                <span class="info-box-number">{{avg_talk_duration|seconds_to_hms}}</span>
+                <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+        </div>
+    </div>
 
-  <!-- Chart Row 2 -->
-  <div class="row mb-4">
-      <div class="col-sm-12 col-md-6">
-          <div id="callsPerAgentChart"></div>
-      </div>
-      <div class="col-sm-12 col-md-6">
-          <div id="chart"></div>
-      </div>
-  </div>
-{% endif %}
+    <!-- Chart Row 1 -->
+    <div class="row mb-4">
+        <div class="col-sm-12 col-md-6">
+            <div id="dialResultDonutChart"></div>
+        </div>
+        <div class="col-sm-12 col-md-6">
+            <div id="dispoChart"></div>
+        </div>
+    </div>
+
+    <!-- Chart Row 2 -->
+    <div class="row mb-4">
+        <div class="col-sm-12 col-md-6">
+            <div id="callsPerAgentChart"></div>
+        </div>
+        <div class="col-sm-12 col-md-6">
+            <div id="chart"></div>
+        </div>
+    </div>
+  {% endif %}
 
 {% endblock content %}
+
+
 
 
 {% block js %}
@@ -278,6 +276,7 @@
         borderRadius: 4,
         borderRadiusApplication: 'end',
         horizontal: true,
+        distributed: true,
       }
     },
     dataLabels: {

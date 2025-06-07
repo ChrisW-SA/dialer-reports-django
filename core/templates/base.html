@@ -36,10 +36,31 @@
     <link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css'%}">
     <link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css'%}">
     <link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css'%}">
+
+    <!--Pre Loader Style-->
+    <style>
+      .preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #f8f9fa; /* or any color you prefer */
+        z-index: 9999;
+        display: flex;
+        transition: opacity 0.5s ease;
+      }
+    </style>
   </head>
-  <body class="layout-fixed sidebar-expand-lg sidebar-mini bg-body-tertiary">
+  <body class="layout-fixed layout-navbar-fixed layout-footer-fixed sidebar-expand-lg sidebar-mini bg-body-tertiary">
     <!--begin::App Wrapper-->
     <div class="app-wrapper">
+
+      <!-- Preloader -->
+      <div class="preloader flex-column justify-content-center align-items-center">
+        <img class="animation__wobble" src="{% static 'assets/img/BigfootLogo.png' %}" alt="Bigfoot Logo" height="60" width="60">
+      </div>
+
       <!--begin::Header-->
       <nav class="app-header navbar navbar-expand bg-body">
         <!--begin::Container-->
@@ -214,8 +235,17 @@
     </div>
     <!--end::App Wrapper-->
     <!--begin::Script-->
+
     <!--JQUERY-->
     <script src="{% static 'plugins/jquery.min.js'%}"></script>
+
+    <!--pre loader-->
+    <script>
+      // Hide preloader when page is fully loaded
+      window.addEventListener('load', function() {
+        $('.preloader').fadeOut();
+      });
+    </script>
     <!--begin::Third Party Plugin(OverlayScrollbars)-->
     <script
       src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js" integrity="sha256-dghWARbRe2eLlIJ56wNB+b760ywulqK3DzZYEpsg2fQ=" crossorigin="anonymous">

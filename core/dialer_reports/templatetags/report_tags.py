@@ -22,15 +22,14 @@ def get_item(dictionary, key):
 
 @register.filter
 def dial_result_badge_color(value):
+    code = value.split("-")[0]
     color_map = {
-        'F-Failed': 'danger',
-        'R-Abandon': 'danger',
-        'R-No Answer': 'warning',
-        'C-Completed': 'success',
-        'R-Timeout': 'warning',
+        'F': 'warning',
+        'R': 'danger',
+        'C': 'success',
         # Add other mappings as needed
     }
-    return color_map.get(value, 'secondary')
+    return color_map.get(code, 'secondary')
 
 @register.filter
 def disposition_badge_color(value):

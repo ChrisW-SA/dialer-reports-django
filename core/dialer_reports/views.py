@@ -47,7 +47,7 @@ def dashboard(request):
         unanswered_calls=Count('id', filter=Q(dial_result__iexact='R-No Answer')),
         complete_calls=Count('id', filter=Q(dial_result__iexact='C-Completed')),
         connected_calls =Count('id', filter=Q(dial_result__iexact='C-Completed')) + Count('id', filter=Q(dial_result__iexact='R-Abandon')),
-        dropped_calls =Count('id', filter=Q(dial_result__iexact='R-No Answer')) + Count('id', filter=Q(dial_result__iexact='F-Failed')) + Count('id', filter=Q(dial_result__iexact='R-Timeout')),
+        dropped_calls =Count('id', filter=Q(dial_result__iexact='R-No Answer')) + Count('id', filter=Q(dial_result__iexact='F-Failed')) + Count('id', filter=Q(dial_result__iexact='R-Timeout'))+ Count('id', filter=Q(dial_result__iexact='F-Trunk Failed')) + Count('id', filter=Q(dial_result__iexact='R-Busy')),
     )
 
     # Average for completed calls only
@@ -131,17 +131,15 @@ def dashboard(request):
 
 @login_required
 def campaigns(request):
-
     # ===== Get the correct filter based on if the user is a superuser or not ===== #
     filter_class = AdminCampaignSearchFilter if request.user.is_superuser else CampaignSerachFilter
-
 
     # Filter the data based on the filter options in the request object
     filterset = filter_class(
         request=request
     )
 
-    # ===== Handle form submission ===== #
+    # ===== Handle form submission (Uploading of csv) ===== #
     if request.method == "POST":
         # Choose form based on user role
         if request.user.is_superuser:
@@ -160,68 +158,77 @@ def campaigns(request):
             csv_file = form.cleaned_data['file']
             _campaign_name = csv_file.name.split('-Completed')[0].replace('PSE-', '')
 
-            new_campaign, created = Campaign.objects.get_or_create(
-                campaign_name=_campaign_name,
-                organization=organization
-            )
-
-            if not created:
+            # Check if campaign already exists first
+            if Campaign.objects.filter(campaign_name=_campaign_name, organization=organization).exists():
                 messages.warning(request, f"The campaign {_campaign_name} already exists.")
                 return redirect("dialer-reports-campaigns")
 
             try:
+                # Try to read the CSV file first
                 df = pd.read_csv(csv_file)
 
                 # Filter dialer CDRs and campaign records
                 dialer_cdrs = filter_campaign_cdrs(df=df, campaign_name=_campaign_name, organization=organization)
                 dialer_calls = filter_campaign_records(df=df, campaign_name=_campaign_name, organization=organization, dialer_cdrs=dialer_cdrs)
 
-            except Exception as e:
-                messages.error(request, 'An error occurred. Are you uploading the completed calls .csv file?')
-                return redirect('dialer-reports-campaigns')
-
-            # Build CampaignRecord instances
-            campaign_records = [
-                CampaignRecord(
-                    time=row['Time'],
-                    name=row['Name'],
-                    number=row['Number'],
-                    number_type=row['Number Type'],
-                    agent_extension=row['Agent'],
-                    dial_result=row['Dial Result'],
-                    call_disposition=row['Call Disposition'],
-                    callback=row['Callback'],
-                    ring_duration=row['Ring Duration'],
-                    talk_duration=row['Talk Duration'],
-                    call_duration=row['Call Duration'],
-                    campaign_name=new_campaign,
-                    organization=organization,
-                    uid=row['ID'],
+                # Only create the campaign if the file was read successfully
+                new_campaign = Campaign.objects.create(
+                    campaign_name=_campaign_name,
+                    organization=organization
                 )
-                for row in dialer_calls.to_dict('records')
-            ]
 
-            with transaction.atomic():
-                CampaignRecord.objects.bulk_create(campaign_records, batch_size=5000)
-                messages.success(request, f"Campaign {_campaign_name} with {len(campaign_records)} records successfully uploaded!")
-
-                # Campaign CDRs
-                campaign_cdrs = [
-                    Cdr(
+                # Build CampaignRecord instances
+                campaign_records = [
+                    CampaignRecord(
                         time=row['Time'],
-                        ring_duration=row.get('Ring Duration', 0),
-                        talk_duration=row.get('Talk Duration', 0),
-                        call_duration=row.get('Call Duration', 0),
-                        status=row.get('Status', ''),
-                        reason=row.get('Reason', ''),
-                        outbound_caller_id=row.get('Outbound Caller ID', ''),
+                        name=row['Name'],
+                        number=row['Number'],
+                        number_type=row['Number Type'],
+                        agent_extension=row['Agent'],
+                        dial_result=row['Dial Result'],
+                        call_disposition=row['Call Disposition'],
+                        callback=row['Callback'],
+                        ring_duration=row['Ring Duration'],
+                        talk_duration=row['Talk Duration'],
+                        call_duration=row['Call Duration'],
                         campaign_name=new_campaign,
                         organization=organization,
-                        campaign_record=CampaignRecord.objects.get(uid=row['ID']),
+                        uid=row['ID'],
                     )
-                    for row in dialer_cdrs.to_dict('records')
+                    for row in dialer_calls.to_dict('records')
                 ]
-                Cdr.objects.bulk_create(campaign_cdrs, batch_size=5000)
+
+                with transaction.atomic():
+                    CampaignRecord.objects.bulk_create(campaign_records, batch_size=5000)
+                    messages.success(request, f"Campaign {_campaign_name} with {len(campaign_records)} records successfully uploaded!")
+
+                    # Campaign CDRs
+                    campaign_cdrs = [
+                        Cdr(
+                            time=row['Time'],
+                            ring_duration=row.get('Ring Duration', 0),
+                            talk_duration=row.get('Talk Duration', 0),
+                            call_duration=row.get('Call Duration', 0),
+                            status=row.get('Status', ''),
+                            reason=row.get('Reason', ''),
+                            outbound_caller_id=row.get('Outbound Caller ID', ''),
+                            campaign_name=new_campaign,
+                            organization=organization,
+                            campaign_record=CampaignRecord.objects.get(uid=row['ID']),
+                        )
+                        for row in dialer_cdrs.to_dict('records')
+                    ]
+                    Cdr.objects.bulk_create(campaign_cdrs, batch_size=5000)
+
+            except pd.errors.EmptyDataError:
+                messages.error(request, 'The uploaded file is empty.')
+                return redirect('dialer-reports-campaigns')
+            except pd.errors.ParserError:
+                messages.error(request, 'Error parsing the CSV file. Please check the file format.')
+                return redirect('dialer-reports-campaigns')
+            except Exception as e:
+                messages.error(request, f'An error occurred: {str(e)}. Are you uploading the completed calls .csv file?')
+                return redirect('dialer-reports-campaigns')
         else:
             messages.error(request, "Invalid file type. Only csv files are permitted.")
     else:
@@ -231,10 +238,8 @@ def campaigns(request):
     return render(request, 'dialer-reports/campaigns.html', context={
         'sidebar_menu': 'dialer-reports',
         'sidebar_sub_menu': 'dialer-reports-campaigns',
-
         'filter': filterset,
         'campaigns': filterset.qs,
-
         'form': form,
     })
 

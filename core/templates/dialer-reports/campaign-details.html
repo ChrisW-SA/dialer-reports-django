@@ -133,8 +133,8 @@
                     <th>Agent</th>
                     <th class="text-end">Answered</th>
                     <th class="text-end">Dispositions</th>
-                    <th class="text-end">Avg Duration</th>
-                    <th class="text-end">Total Duration</th>
+                    <th class="text-end">Avg Talk Duration</th>
+                    <th class="text-end">Total Talk Duration</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -342,95 +342,221 @@
     chart.render();
 </script>
 
+
 <!-- Dial Result Bar Chart -->
 <script>
     var options = {
-        series: [{ name: 'Count', data: {{dial_result_counts}} }],
         chart: {
             type: 'bar',
             height: '100%',
-            width: '100%',
-            //toolbar: { show: false },
-            animations: { enabled: false }
+            parentHeightOffset: 0,
+            offsetX: 30, // Adds padding to the right side of chart
+            animations: {
+                enabled: false
+            },
+            toolbar: {
+                show: true,
+                tools: {
+                    download: true,
+                    selection: true,
+                    zoom: true,
+                    zoomin: true,
+                    zoomout: true,
+                    pan: true,
+                    reset: true
+                },
+                export: {
+                    csv: false,
+                    svg: true,
+                    png: true
+                }
+            }
         },
-        title: {
-            text: 'Dial Results',
-            align: 'left',
-            style: { fontSize: '14px' }
-        },
+        series: [{
+            name: 'Total Calls',
+            data: {{dial_result_counts}}
+        }],
         plotOptions: {
             bar: {
-                borderRadius: 4,
                 horizontal: true,
-                distributed: true // Better for categorical data
+                distributed: true,
+                barHeight: '70%',
+                borderRadius: 4,
+                dataLabels: {
+                    position: 'end' 
+                }
             }
         },
-        dataLabels: { enabled: false },
+        dataLabels: {
+            enabled: true,
+            formatter: function(val) {
+                return val; // Display the exact value
+            },
+            style: {
+                fontSize: '11px',
+                colors: ['#333'],
+                fontWeight: 'bold'
+            },
+            textAnchor: 'start', // Ensures text alignment stays consistent
+            offsetX: 30, // THIS ADDS SPACE BETWEEN BAR END AND LABEL (in pixels)
+            offsetY: 0,  // Vertical adjustment if needed
+            dropShadow: {
+                enabled: false
+            }
+        },
         xaxis: {
             categories: {{dial_result_labels|safe}},
-            labels: { show: true, trim: true, style: { fontSize: '10px' } }
+            labels: {
+                style: {
+                    fontSize: '12px'
+                },
+                trim: true
+            },
+            title: {
+                text: 'Number of Calls',
+                style: {
+                    fontSize: '11px'
+                }
+            }
         },
         yaxis: {
-            labels: { style: { fontSize: '10px' } }
-        },
-        responsive: [{
-            breakpoint: 600,
-            options: {
-                plotOptions: { bar: { barHeight: '50%' } },
-                xaxis: { labels: { rotate: -45 } }
+            labels: {
+                style: {
+                    fontSize: '12px'
+                }
             }
-        }]
+        },
+        tooltip: {
+            y: {
+                formatter: function(val) {
+                    return val;
+                }
+            }
+        },
+        title: {
+            text: 'Calls Per Agent',
+            align: 'left',
+            style: {
+                fontSize: '14px',
+                fontWeight: 'bold'
+            }
+        }
     };
 
     var chart = new ApexCharts(document.querySelector("#dialResultChart"), options);
     chart.render();
 </script>
 
+
 <!-- Dispositions Bar Chart -->
 <script>
     var options = {
-        series: [{ name: 'Count', data: {{dispo_counts}} }],
         chart: {
             type: 'bar',
             height: '100%',
             width: '100%',
-            stacked: false,
+            parentHeightOffset: 0,
+            animations: { 
+                enabled: false 
+            },
+            toolbar: {
+                show: true,
+                tools: {
+                    download: true,
+                    selection: false,
+                    zoom: false,
+                    zoomin: false,
+                    zoomout: false,
+                    pan: false,
+                    reset: true
+                },
+                export: {
+                    csv: false,
+                    svg: false,
+                    png: true
+                }
+            }
         },
-        title: {
-            text: 'Dispositions',
-            align: 'left',
-            style: { fontSize: '14px' }
-        },
+        series: [{
+            name: 'Dispositions',
+            data: {{dispo_counts}}
+        }],
         plotOptions: {
             bar: {
                 horizontal: false,
-                columnWidth: '70%',
+                columnWidth: '55%',
                 borderRadius: 4,
-                dataLabels: { position: 'top' }
+                dataLabels: {
+                    position: 'top',
+                }
             }
         },
-        dataLabels: {
+        dataLabels: { 
             enabled: true,
-            formatter: function(val) { return val > 0 ? val : '' },
-            style: { fontSize: '10px' }
+            formatter: function(val) {
+                return val; // Show actual count value
+            },
+            offsetY: -20,
+            style: { 
+                fontSize: '11px',
+                colors: ['#333'],
+            },
         },
         xaxis: {
             categories: {{dispo_labels|safe}},
-            labels: { style: { fontSize: '10px' }, rotate: -45 }
-        },
-        yaxis: { labels: { style: { fontSize: '10px' } } },
-        responsive: [{
-            breakpoint: 600,
-            options: {
-                plotOptions: { bar: { columnWidth: '50%' } },
-                dataLabels: { enabled: false }
+            labels: {
+                style: {
+                    fontSize: '12px'
+                },
+                trim: true
             }
-        }]
+        },
+        yaxis: {
+            // max: 100,
+            labels: {
+                formatter: function(val) {
+                    return Math.round(val); // Show rounded values on axis
+                },
+                style: {
+                    fontSize: '12px'
+                },
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: function(val) {
+                    return val.toLocaleString(); // Format tooltip value
+                }
+            }
+        },
+        responsive: [{
+            breakpoint: 768,
+            options: {
+                plotOptions: {
+                bar: {
+                    columnWidth: '50%'
+                }
+                },
+                dataLabels: {
+                style: {
+                    fontSize: '10px'
+                }
+                }
+            }
+        }],
+        title: {
+            text: 'Dispositions',
+            align: 'left',
+            style: { 
+                fontSize: '14px' 
+            }
+        },
     };
 
     var chart = new ApexCharts(document.querySelector("#dispoChart"), options);
     chart.render();
 </script>
+
 
 <!-- Connected vs Drpped Donut Chart -->
 <script>
@@ -505,14 +631,17 @@
     chart.render();
 </script>
 
+
 <!-- Agent Dispo % Bar Chart -->
 <script>
-  // Agent Disposition Percentage Bar Chart
   var options = {
     chart: {
       type: 'bar',
       height: '100%',
       parentHeightOffset: 0,
+      animations: { 
+          enabled: false 
+      },
       toolbar: {
         show: true,
         tools: {
@@ -538,8 +667,9 @@
     plotOptions: {
       bar: {
         horizontal: false,
-        borderRadius: 4,
+        distributed: false, // To make all bars ine colour
         columnWidth: '70%',
+        borderRadius: 4,
         dataLabels: {
           position: 'top'
         }
@@ -608,84 +738,6 @@
 </script>
 
 
-
-
-
-<!-- Agent Dispo % Bar Chart -->
-{% comment %} <script>
-  var options = {
-      chart: {
-          type: 'bar',
-          height: 350,
-          toolbar: { show: false }
-      },
-            title: {
-            text: 'Agent Call Dispostion Rate',
-        },
-      series: [{
-          name: 'Disposition Rate (%)',
-          data: {{ agent_disposition_percentage_chart_data.series|safe }}
-      }],
-      plotOptions: {
-          bar: {
-              horizontal: false,
-              borderRadius: 4,
-              distributed: true,  // Each bar gets a unique color
-              dataLabels: {
-                  position: 'top',  // Show percentages on top of bars
-              }
-          }
-      },
-      dataLabels: {
-          enabled: true,
-          formatter: function(val) {
-              return val.toFixed(1) + '%';  // Show 1 decimal place
-          },
-          offsetY: -20,  // Adjust label position
-          style: {
-              fontSize: '12px',
-              colors: ['#333']
-          }
-      },
-      xaxis: {
-          categories: {{ agent_disposition_percentage_chart_data.labels|safe }},
-          axisBorder: { show: false },
-          axisTicks: { show: false },
-          labels: {
-              style: {
-                  fontSize: '12px',
-                  fontWeight: 'bold'
-              }
-          }
-      },
-      yaxis: {
-          max: 100,  // Percentage scale (0-100%)
-          labels: {
-              formatter: function(val) {
-                  return val.toFixed(0) + '%';
-              }
-          }
-      },
-      tooltip: {
-          y: {
-              formatter: function(val) {
-                  return val.toFixed(1) + '%';
-              }
-          }
-      },
-      grid: {
-          borderColor: '#f1f1f1',  // Light grid lines
-          strokeDashArray: 3
-      }
-  };
-
-  var chart = new ApexCharts(
-      document.querySelector("#agentDispositionChart"),
-      options
-  );
-  chart.render();
-</script> {% endcomment %}
-
 <!--Data Tables-->
 <script>
   $(function () {
@@ -706,23 +758,4 @@
   });
 </script>
 
-{% comment %} <script>
-  // Initialize DataTables
-  $(document).ready(function() {
-    $('#agentCallPerformanceTable').DataTable({
-      responsive: true,
-      dom: '<"top"f>rt<"bottom"lip><"clear">',
-      pageLength: 10,
-      order: [[1, 'desc']]
-    });
-
-    $('#agentDispositionTable').DataTable({
-      responsive: true,
-      dom: '<"top"f>rt<"bottom"lip><"clear">',
-      pageLength: 10,
-      scrollX: true,
-      order: [[0, 'asc']]
-    });
-  });
-</script> {% endcomment %}
 {% endblock js %}

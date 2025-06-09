@@ -12,7 +12,7 @@ from dialer_reports.filters import CampaignSerachFilter, AdminCampaignSearchFilt
 from dialer_reports.data_cleaning import filter_campaign_cdrs, filter_campaign_records
 
 import pandas as pd
-from datetime import datetime, date
+from datetime import date
 import calendar
 
 
@@ -141,18 +141,14 @@ def campaigns(request):
 
     # ===== Handle form submission (Uploading of csv) ===== #
     if request.method == "POST":
+
         # Choose form based on user role
-        if request.user.is_superuser:
-            form = AdminUploadFileForm(request.POST, request.FILES)
-        else:
-            form = UploadFileForm(request.POST, request.FILES)
+        form = AdminUploadFileForm(request.POST, request.FILES) if request.user.is_superuser else UploadFileForm(request.POST, request.FILES)
 
         if form.is_valid():
-            # Determine organization
-            if request.user.is_superuser:
-                organization = form.cleaned_data['organization']
-            else:
-                organization = request.user.organization
+
+            # Get organization
+            organization = form.cleaned_data['organization'] if request.user.is_superuser else request.user.organization
 
             # Process file upload
             csv_file = form.cleaned_data['file']
@@ -169,66 +165,61 @@ def campaigns(request):
 
                 # Filter dialer CDRs and campaign records
                 dialer_cdrs = filter_campaign_cdrs(df=df, campaign_name=_campaign_name, organization=organization)
-                dialer_calls = filter_campaign_records(df=df, campaign_name=_campaign_name, organization=organization, dialer_cdrs=dialer_cdrs)
 
-                # Only create the campaign if the file was read successfully
-                new_campaign = Campaign.objects.create(
-                    campaign_name=_campaign_name,
-                    organization=organization
-                )
-
-                # Build CampaignRecord instances
-                campaign_records = [
-                    CampaignRecord(
-                        time=row['Time'],
-                        name=row['Name'],
-                        number=row['Number'],
-                        number_type=row['Number Type'],
-                        agent_extension=row['Agent'],
-                        dial_result=row['Dial Result'],
-                        call_disposition=row['Call Disposition'],
-                        callback=row['Callback'],
-                        ring_duration=row['Ring Duration'],
-                        talk_duration=row['Talk Duration'],
-                        call_duration=row['Call Duration'],
-                        campaign_name=new_campaign,
-                        organization=organization,
-                        uid=row['ID'],
-                    )
-                    for row in dialer_calls.to_dict('records')
-                ]
-
-                with transaction.atomic():
-                    CampaignRecord.objects.bulk_create(campaign_records, batch_size=5000)
-                    messages.success(request, f"Campaign {_campaign_name} with {len(campaign_records)} records successfully uploaded!")
-
-                    # Campaign CDRs
-                    campaign_cdrs = [
-                        Cdr(
-                            time=row['Time'],
-                            ring_duration=row.get('Ring Duration', 0),
-                            talk_duration=row.get('Talk Duration', 0),
-                            call_duration=row.get('Call Duration', 0),
-                            status=row.get('Status', ''),
-                            reason=row.get('Reason', ''),
-                            outbound_caller_id=row.get('Outbound Caller ID', ''),
-                            campaign_name=new_campaign,
-                            organization=organization,
-                            campaign_record=CampaignRecord.objects.get(uid=row['ID']),
-                        )
-                        for row in dialer_cdrs.to_dict('records')
-                    ]
-                    Cdr.objects.bulk_create(campaign_cdrs, batch_size=5000)
-
-            except pd.errors.EmptyDataError:
-                messages.error(request, 'The uploaded file is empty.')
-                return redirect('dialer-reports-campaigns')
-            except pd.errors.ParserError:
-                messages.error(request, 'Error parsing the CSV file. Please check the file format.')
-                return redirect('dialer-reports-campaigns')
             except Exception as e:
                 messages.error(request, f'An error occurred: {str(e)}. Are you uploading the completed calls .csv file?')
                 return redirect('dialer-reports-campaigns')
+
+            dialer_calls = filter_campaign_records(df=df, campaign_name=_campaign_name, organization=organization, dialer_cdrs=dialer_cdrs)
+
+            # Only create the campaign if the file was read successfully
+            new_campaign = Campaign.objects.create(
+                campaign_name=_campaign_name,
+                organization=organization
+            )
+
+            # Build CampaignRecord instances
+            campaign_records = [
+                CampaignRecord(
+                    time=row['Time'],
+                    name=row['Name'],
+                    number=row['Number'],
+                    number_type=row['Number Type'],
+                    agent_extension=row['Agent'],
+                    dial_result=row['Dial Result'],
+                    call_disposition=row['Call Disposition'],
+                    callback=row['Callback'],
+                    ring_duration=row['Ring Duration'],
+                    talk_duration=row['Talk Duration'],
+                    call_duration=row['Call Duration'],
+                    campaign_name=new_campaign,
+                    organization=organization,
+                    uid=row['ID'],
+                )
+                for row in dialer_calls.to_dict('records')
+            ]
+
+            with transaction.atomic():
+                CampaignRecord.objects.bulk_create(campaign_records, batch_size=5000)
+                messages.success(request, f"Campaign {_campaign_name} with {len(campaign_records)} records successfully uploaded!")
+
+                # Campaign CDRs
+                campaign_cdrs = [
+                    Cdr(
+                        time=row['Time'],
+                        ring_duration=row.get('Ring Duration', 0),
+                        talk_duration=row.get('Talk Duration', 0),
+                        call_duration=row.get('Call Duration', 0),
+                        status=row.get('Status', ''),
+                        reason=row.get('Reason', ''),
+                        outbound_caller_id=row.get('Outbound Caller ID', ''),
+                        campaign_name=new_campaign,
+                        organization=organization,
+                        campaign_record=CampaignRecord.objects.get(uid=row['ID']),
+                    )
+                    for row in dialer_cdrs.to_dict('records')
+                ]
+                Cdr.objects.bulk_create(campaign_cdrs, batch_size=5000)
         else:
             messages.error(request, "Invalid file type. Only csv files are permitted.")
     else:

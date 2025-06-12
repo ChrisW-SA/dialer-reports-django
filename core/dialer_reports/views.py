@@ -415,7 +415,6 @@ def agent_overview(request):
 
     filter_class = AdminCampaignRecordDateFilter if request.user.is_superuser else CampaignRecordDateFilter
 
-    
     # Initialize the filter with the agent choices
     filter_class = filter_class(
         request.GET,

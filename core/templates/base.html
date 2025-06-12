@@ -37,6 +37,7 @@
     <link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css'%}">
     <link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css'%}">
 
+
     <!--Pre Loader Style-->
     <style>
       /* ======================
@@ -232,6 +233,13 @@
                 <a href="{% url 'dialer-reports-campaigns' %}" class="nav-link {% if sidebar_sub_menu == "dialer-reports-campaigns" %}active{% endif %}">
                   <i class="fa-solid fa-list-check"></i>
                   <p>Campaigns</p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="{% url 'dialer-reports-agent-overviw'%}" class="nav-link {% if sidebar_menu == "dialer-reports-agents" %}active{% endif %}">
+                  <i class="fa-solid fa-headset"></i>
+                  <p>Agent Reports</p>
                 </a>
               </li>
 

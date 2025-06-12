@@ -7,7 +7,7 @@ from django.db.models.functions import TruncDate
 
 from dialer_reports.models import Campaign, CampaignRecord, Cdr
 from dialer_reports.forms import UploadFileForm, AdminUploadFileForm
-from dialer_reports.filters import CampaignSerachFilter, AdminCampaignSearchFilter, CampaignRecordFilter, AdminCampaignRecordFilter
+from dialer_reports.filters import CampaignSerachFilter, AdminCampaignSearchFilter, CampaignRecordFilter, AdminCampaignRecordFilter, CampaignRecordDateFilter, AdminCampaignRecordDateFilter
 
 from dialer_reports.data_cleaning import filter_campaign_cdrs, filter_campaign_records
 
@@ -410,3 +410,75 @@ def delete_campaign(request, pk):
 
     return redirect("dialer-reports-campaigns")
 
+@login_required
+def agent_overview(request):
+
+    filter_class = AdminCampaignRecordDateFilter if request.user.is_superuser else CampaignRecordDateFilter
+
+    
+    # Initialize the filter with the agent choices
+    filter_class = filter_class(
+        request.GET,
+        queryset=CampaignRecord.get_base_queryset(request),
+        request=request
+    )
+
+    queryset = filter_class.qs
+
+        # ===== Agents Stats ===== #
+    call_stats = (
+        queryset.filter(dial_result="C-Completed")
+            .values('agent_extension')
+            .annotate(
+                answered_calls=Count('uid'),
+                dispositions=Count('id', filter=~Q(call_disposition='')),
+                total_talk_duration=Sum('talk_duration'),
+                avg_talk_duration=Avg('talk_duration'),
+                # Calculate disposition percentage (dispositions / answered_calls * 100)
+                disposition_percentage=ExpressionWrapper(
+                    F('dispositions') * 100.0 / F('answered_calls'),
+                    output_field=FloatField()
+                )
+            )
+            .order_by('agent_extension')
+    )
+
+    # ===== Agent Dispositions ===== #
+    DISPOSITION_CHOICES = queryset.values_list('call_disposition', flat=True).distinct()
+
+    # Build annotations using Case + When
+    annotations = {
+        disposition.replace(" ", "_").lower(): Count(
+            Case(
+                When(call_disposition=disposition, then=1),
+                output_field=IntegerField(),
+            )
+        )
+        for disposition in DISPOSITION_CHOICES
+    }
+
+    agent_dispos = (
+        queryset.filter(dial_result='C-Completed')
+            .values('agent_extension')
+            .annotate(**annotations)
+            .order_by('agent_extension')
+    )
+
+    headers = ['Agent Extension'] + [
+        'No Dispo' if name == '' else name.replace("_", " ").title()
+        for name in annotations.keys()
+    ],
+    
+
+    
+    return render(request, 'dialer-reports/agent-overview.html', {
+        'filter': filter_class,
+
+        'agent_stats': call_stats,
+
+        # Agent Dispositions
+        'agent_dispositions': agent_dispos,
+        'headers': headers[0],
+        'field_names': ['agent_extension'] + list(annotations.keys()),
+
+    })

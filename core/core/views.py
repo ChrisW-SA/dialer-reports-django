@@ -5,7 +5,8 @@ from django.contrib import messages
 
 from core.decorators import redirect_authenticated_user
 
-
+from django.db.models import Count, Avg, Sum, Max, Q, Case, When, IntegerField, Max, ExpressionWrapper, FloatField, F
+from dialer_reports.models import CampaignRecord
 
 def index(request):
 
@@ -44,16 +45,11 @@ def logout_view(request):
 
 @login_required
 def home(request):
-    
-    # from dialer_reports.models import CampaignRecord, Cdr
-    # CampaignRecord.objects.all().delete()
-    # Cdr.objects.all().delete()
 
     return render(request, "core/home.html", context={"sidebar_menu": "home-page"})
 
 
 @login_required
 def page_not_found(request):
-
 
     return redirect(request, '404.html')

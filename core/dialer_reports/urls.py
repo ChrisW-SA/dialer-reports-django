@@ -11,4 +11,5 @@ urlpatterns = [
     path('campaign-record-call-flow/<int:pk>', views.campaign_record_call_flow, name='dialer-reports-campaign-record-call-flow'),
     path('delete-campaign-confirmation/<int:pk>', views.delete_campaign_confirmation, name='dialer-reports-delete-campaign-confirmation'),
     path('delete-campaign/<int:pk>', views.delete_campaign, name='dialer-reports-delete-campaign'),
+    path('agent-overview', views.agent_overview, name='dialer-reports-agent-overviw'),
 ]
